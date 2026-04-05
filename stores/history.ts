@@ -17,7 +17,7 @@ export const useHistoryStore = defineStore('history', () => {
 
   const bestWpm = computed(() => {
     if (entries.value.length === 0) return 0
-    return Math.max(...entries.value.map(e => e.wpm))
+    return Math.max(...entries.value.map((e) => e.wpm))
   })
 
   const averageAccuracy = computed(() => {
@@ -28,7 +28,7 @@ export const useHistoryStore = defineStore('history', () => {
 
   const bestAccuracy = computed(() => {
     if (entries.value.length === 0) return 0
-    return Math.max(...entries.value.map(e => e.accuracy))
+    return Math.max(...entries.value.map((e) => e.accuracy))
   })
 
   const totalPracticeSeconds = computed(() =>
@@ -44,23 +44,17 @@ export const useHistoryStore = defineStore('history', () => {
     return `${h}h ${m}m`
   })
 
-  const totalCharsTyped = computed(() =>
-    entries.value.reduce((acc, e) => acc + e.chars, 0),
-  )
+  const totalCharsTyped = computed(() => entries.value.reduce((acc, e) => acc + e.chars, 0))
 
-  const totalErrors = computed(() =>
-    entries.value.reduce((acc, e) => acc + e.errors, 0),
-  )
+  const totalErrors = computed(() => entries.value.reduce((acc, e) => acc + e.errors, 0))
 
-  const recentEntries = computed(() =>
-    [...entries.value].reverse().slice(0, 20),
-  )
+  const recentEntries = computed(() => [...entries.value].reverse().slice(0, 20))
 
   const wpmTrend = computed(() => {
     const recent = [...entries.value].slice(-20)
     if (recent.length === 0) return []
-    const max = Math.max(...recent.map(e => e.wpm), 1)
-    return recent.map(e => ({
+    const max = Math.max(...recent.map((e) => e.wpm), 1)
+    return recent.map((e) => ({
       wpm: e.wpm,
       accuracy: e.accuracy,
       percent: Math.round((e.wpm / max) * 100),
@@ -80,14 +74,16 @@ export const useHistoryStore = defineStore('history', () => {
       s.best = Math.max(s.best, e.wpm)
       s.chars += e.chars
     }
-    return Array.from(map.entries()).map(([id, s]) => ({
-      id,
-      sessions: s.wpm.length,
-      avgWpm: Math.round(s.wpm.reduce((a, b) => a + b, 0) / s.wpm.length),
-      bestWpm: s.best,
-      avgAccuracy: Math.round(s.acc.reduce((a, b) => a + b, 0) / s.acc.length),
-      totalChars: s.chars,
-    })).sort((a, b) => b.sessions - a.sessions)
+    return Array.from(map.entries())
+      .map(([id, s]) => ({
+        id,
+        sessions: s.wpm.length,
+        avgWpm: Math.round(s.wpm.reduce((a, b) => a + b, 0) / s.wpm.length),
+        bestWpm: s.best,
+        avgAccuracy: Math.round(s.acc.reduce((a, b) => a + b, 0) / s.acc.length),
+        totalChars: s.chars,
+      }))
+      .sort((a, b) => b.sessions - a.sessions)
   })
 
   const currentStreak = computed(() => {
@@ -127,8 +123,12 @@ export const useHistoryStore = defineStore('history', () => {
     return [...set].sort()
   }
 
-  function todayStr(): string { return new Date().toISOString().slice(0, 10) }
-  function dayStr(ms: number): string { return new Date(ms).toISOString().slice(0, 10) }
+  function todayStr(): string {
+    return new Date().toISOString().slice(0, 10)
+  }
+  function dayStr(ms: number): string {
+    return new Date(ms).toISOString().slice(0, 10)
+  }
   function dayDiff(a: string, b: string): number {
     return Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86400000)
   }
@@ -153,20 +153,38 @@ export const useHistoryStore = defineStore('history', () => {
         const parsed = JSON.parse(saved) as HistoryEntry[]
         entries.value = parsed.slice(-MAX_ENTRIES)
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 
   function saveToStorage() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(entries.value))
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 
   return {
-    entries, totalSessions, averageWpm, bestWpm, averageAccuracy,
-    bestAccuracy, totalPracticeSeconds, totalPracticeFormatted,
-    totalCharsTyped, totalErrors, recentEntries, wpmTrend,
-    languageStats, currentStreak, longestStreak,
-    addEntry, clearHistory, loadFromStorage, saveToStorage,
+    entries,
+    totalSessions,
+    averageWpm,
+    bestWpm,
+    averageAccuracy,
+    bestAccuracy,
+    totalPracticeSeconds,
+    totalPracticeFormatted,
+    totalCharsTyped,
+    totalErrors,
+    recentEntries,
+    wpmTrend,
+    languageStats,
+    currentStreak,
+    longestStreak,
+    addEntry,
+    clearHistory,
+    loadFromStorage,
+    saveToStorage,
   }
 })

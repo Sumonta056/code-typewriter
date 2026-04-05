@@ -35,15 +35,35 @@ export const useSettingsStore = defineStore('settings', () => {
   function loadFromStorage() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
-      if (saved) Object.assign(settings, JSON.parse(saved))
-    } catch { /* ignore */ }
+      if (!saved) return
+      const parsed = JSON.parse(saved)
+      if (typeof parsed !== 'object' || parsed === null) return
+
+      for (const key of Object.keys(NUMERIC_LIMITS) as NumericSettingKey[]) {
+        if (typeof parsed[key] === 'number' && isFinite(parsed[key])) {
+          const { min, max } = NUMERIC_LIMITS[key]
+          settings[key] = Math.max(min, Math.min(max, parsed[key]))
+        }
+      }
+
+      const boolKeys: BooleanSettingKey[] = ['sound', 'lineNumbers', 'smoothCaret']
+      for (const key of boolKeys) {
+        if (typeof parsed[key] === 'boolean') {
+          settings[key] = parsed[key]
+        }
+      }
+    } catch {
+      /* ignore */
+    }
     applyCssVariables()
   }
 
   function saveToStorage() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 
   function applyCssVariables() {
@@ -53,5 +73,12 @@ export const useSettingsStore = defineStore('settings', () => {
     root.style.setProperty('--code-tab-size', String(settings.tabSize))
   }
 
-  return { settings, updateNumeric, toggleBoolean, loadFromStorage, saveToStorage, applyCssVariables }
+  return {
+    settings,
+    updateNumeric,
+    toggleBoolean,
+    loadFromStorage,
+    saveToStorage,
+    applyCssVariables,
+  }
 })

@@ -6,11 +6,11 @@ Conventions, patterns, and rules that govern how this codebase is structured and
 
 ## 1. Framework & Runtime Rules
 
-| Rule | Detail |
-|------|--------|
-| **SSR is disabled** | `ssr: false` in `nuxt.config.ts`. The app is a pure client-side SPA. Never assume server context. |
-| **Client-only guards** | Any code that touches `window`, `localStorage`, `document`, or Web APIs must be guarded with `import.meta.client` or run inside `onMounted`. |
-| **No server routes** | There are no Nuxt server routes or API handlers. All data fetching hits external URLs directly from the browser. |
+| Rule                         | Detail                                                                                                                                                               |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **SSR is disabled**          | `ssr: false` in `nuxt.config.ts`. The app is a pure client-side SPA. Never assume server context.                                                                    |
+| **Client-only guards**       | Any code that touches `window`, `localStorage`, `document`, or Web APIs must be guarded with `import.meta.client` or run inside `onMounted`.                         |
+| **No server routes**         | There are no Nuxt server routes or API handlers. All data fetching hits external URLs directly from the browser.                                                     |
 | **Plugin bootstraps stores** | `client-init.plugin.ts` is the single entry point for hydrating state from `localStorage` and fetching `snippets.json`. Do not load stores anywhere else on startup. |
 
 ---
@@ -44,12 +44,12 @@ Conventions, patterns, and rules that govern how this codebase is structured and
 
 ### Naming
 
-| Pattern | Example |
-|---------|---------|
-| Components are PascalCase files grouped by feature folder | `components/editor/CodeDisplay.vue` |
-| Auto-import prefix matches folder name | `EditorCodeDisplay`, `StatsLiveStats`, `PanelsUrlPanel` |
-| Generic, reusable primitives live in `components/ui/` | `BaseButton`, `IconButton`, `HiddenInput` |
-| App-level shell components live in `components/app/` | `AppHeader`, `AppLogo`, `AppScanlines` |
+| Pattern                                                   | Example                                                 |
+| --------------------------------------------------------- | ------------------------------------------------------- |
+| Components are PascalCase files grouped by feature folder | `components/editor/CodeDisplay.vue`                     |
+| Auto-import prefix matches folder name                    | `EditorCodeDisplay`, `StatsLiveStats`, `PanelsUrlPanel` |
+| Generic, reusable primitives live in `components/ui/`     | `BaseButton`, `IconButton`, `HiddenInput`               |
+| App-level shell components live in `components/app/`      | `AppHeader`, `AppLogo`, `AppScanlines`                  |
 
 ### Props & Events
 
@@ -110,14 +110,14 @@ Conventions, patterns, and rules that govern how this codebase is structured and
 
 ## 8. Settings Rules
 
-| Setting | Type | Default | Min | Max | Persisted |
-|---------|------|---------|-----|-----|-----------|
-| `fontSize` | number | 14 | 10 | 24 | yes |
-| `tabSize` | number | 2 | 1 | 8 | yes |
-| `maxLines` | number | 50 | 10 | 200 | yes |
-| `sound` | boolean | false | — | — | yes |
-| `lineNumbers` | boolean | true | — | — | yes |
-| `smoothCaret` | boolean | true | — | — | yes |
+| Setting       | Type    | Default | Min | Max | Persisted |
+| ------------- | ------- | ------- | --- | --- | --------- |
+| `fontSize`    | number  | 14      | 10  | 24  | yes       |
+| `tabSize`     | number  | 2       | 1   | 8   | yes       |
+| `maxLines`    | number  | 50      | 10  | 200 | yes       |
+| `sound`       | boolean | false   | —   | —   | yes       |
+| `lineNumbers` | boolean | true    | —   | —   | yes       |
+| `smoothCaret` | boolean | true    | —   | —   | yes       |
 
 - Settings are persisted to `localStorage` on every change (not debounced).
 - `fontSize` and `tabSize` changes immediately write `--code-font-size` and `--code-tab-size` CSS custom properties to `document.documentElement` via `applyCssVariables()`.
@@ -144,9 +144,7 @@ Conventions, patterns, and rules that govern how this codebase is structured and
      "id": "python",
      "name": "Python",
      "extension": ".py",
-     "files": [
-       { "name": "My Snippet", "url": "https://raw.githubusercontent.com/..." }
-     ]
+     "files": [{ "name": "My Snippet", "url": "https://raw.githubusercontent.com/..." }]
    }
    ```
 3. To add a new **file** to an existing language, push to that language's `files` array.
@@ -159,15 +157,15 @@ Conventions, patterns, and rules that govern how this codebase is structured and
 
 Defined in `assets/css/variables.css`. Always use these tokens — never hardcode colors or sizes.
 
-| Category | Token | Usage |
-|----------|-------|-------|
-| Background | `--bg`, `--bg-surface`, `--bg-hover` | Page, card, hover states |
-| Text | `--text`, `--text-dim`, `--text-faint` | Primary, secondary, muted text |
-| Accent | `--accent`, `--accent-dim` | Cursor, active states |
-| Correct | `--correct` | Correctly typed characters |
-| Incorrect | `--incorrect` | Incorrectly typed characters |
-| Pending | `--pending` | Not-yet-typed characters |
-| Border | `--border` | Dividers, component outlines |
-| Radius | `--radius` | Shared border-radius |
-| Font (UI) | `--font-ui` | All UI labels (Space Grotesk) |
-| Font (Code) | `--font-code` | Code display and monospace elements (Fira Code) |
+| Category    | Token                                  | Usage                                           |
+| ----------- | -------------------------------------- | ----------------------------------------------- |
+| Background  | `--bg`, `--bg-surface`, `--bg-hover`   | Page, card, hover states                        |
+| Text        | `--text`, `--text-dim`, `--text-faint` | Primary, secondary, muted text                  |
+| Accent      | `--accent`, `--accent-dim`             | Cursor, active states                           |
+| Correct     | `--correct`                            | Correctly typed characters                      |
+| Incorrect   | `--incorrect`                          | Incorrectly typed characters                    |
+| Pending     | `--pending`                            | Not-yet-typed characters                        |
+| Border      | `--border`                             | Dividers, component outlines                    |
+| Radius      | `--radius`                             | Shared border-radius                            |
+| Font (UI)   | `--font-ui`                            | All UI labels (Space Grotesk)                   |
+| Font (Code) | `--font-code`                          | Code display and monospace elements (Fira Code) |

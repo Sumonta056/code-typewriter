@@ -17,38 +17,39 @@
 </template>
 
 <script setup lang="ts">
-const emit = defineEmits<{
-  keydown: [e: KeyboardEvent]
-}>()
+  const emit = defineEmits<{
+    keydown: [e: KeyboardEvent]
+  }>()
 
-const inputEl = ref<HTMLTextAreaElement | null>(null)
+  const inputEl = ref<HTMLTextAreaElement | null>(null)
 
-function onKeyDown(e: KeyboardEvent) {
-  emit('keydown', e)
-}
+  function onKeyDown(e: KeyboardEvent) {
+    emit('keydown', e)
+  }
 
-function onInput() {
-  if (inputEl.value) inputEl.value.value = ''
-}
+  function onInput() {
+    if (inputEl.value) inputEl.value.value = ''
+  }
 
-function focus() {
-  inputEl.value?.focus()
-}
+  function focus() {
+    inputEl.value?.focus()
+  }
 
-function clear() {
-  if (inputEl.value) inputEl.value.value = ''
-}
+  function clear() {
+    if (inputEl.value) inputEl.value.value = ''
+  }
 
-defineExpose({ focus, clear })
+  defineExpose({ focus, clear })
 </script>
 
 <style scoped>
-.hidden-input {
-  position: fixed;
-  top: -9999px;
-  left: -9999px;
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
+  .hidden-input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    pointer-events: none;
+  }
 </style>

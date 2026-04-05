@@ -1,5 +1,11 @@
+import { onScopeDispose } from 'vue'
+
 export function useScrollTracker() {
   let rafId = 0
+
+  onScopeDispose(() => {
+    cancelAnimationFrame(rafId)
+  })
 
   function scrollToIndex(containerEl: HTMLElement | null, charEls: HTMLElement[], index: number) {
     if (!containerEl || index >= charEls.length) return

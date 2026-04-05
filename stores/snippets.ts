@@ -6,8 +6,8 @@ export const useSnippetsStore = defineStore('snippets', () => {
   const selectedLanguageId = ref<string>('')
   const isLoaded = ref(false)
 
-  const selectedLanguage = computed(() =>
-    languages.value.find(l => l.id === selectedLanguageId.value) ?? null,
+  const selectedLanguage = computed(
+    () => languages.value.find((l) => l.id === selectedLanguageId.value) ?? null,
   )
 
   function getRandomFile(): SnippetFile | null {
@@ -33,5 +33,13 @@ export const useSnippetsStore = defineStore('snippets', () => {
     selectedLanguageId.value = id
   }
 
-  return { languages, selectedLanguageId, isLoaded, selectedLanguage, getRandomFile, loadSnippets, selectLanguage }
+  return {
+    languages,
+    selectedLanguageId,
+    isLoaded,
+    selectedLanguage,
+    getRandomFile,
+    loadSnippets,
+    selectLanguage,
+  }
 })

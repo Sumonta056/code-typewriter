@@ -1,4 +1,4 @@
-export function useKeyboardHandler() {
+export function useKeyboardHandler(getTabSize: () => number = () => 2) {
   function handleKeyDown(
     e: KeyboardEvent,
     callbacks: {
@@ -11,7 +11,10 @@ export function useKeyboardHandler() {
 
     if (e.key === 'Tab') {
       e.preventDefault()
-      callbacks.onChar('\t')
+      const spaces = ' '.repeat(getTabSize())
+      for (const ch of spaces) {
+        callbacks.onChar(ch)
+      }
       return
     }
 

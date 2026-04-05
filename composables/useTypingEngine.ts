@@ -29,7 +29,9 @@ export function useTypingEngine() {
   function setTypingActive() {
     typingActive.value = true
     if (typingTimeout) clearTimeout(typingTimeout)
-    typingTimeout = setTimeout(() => { typingActive.value = false }, 500)
+    typingTimeout = setTimeout(() => {
+      typingActive.value = false
+    }, 500)
   }
 
   async function loadCode(url: string, name: string): Promise<boolean> {
@@ -104,7 +106,9 @@ export function useTypingEngine() {
       date: new Date().toISOString(),
     })
 
-    setTimeout(() => { showResults.value = true }, 350)
+    setTimeout(() => {
+      showResults.value = true
+    }, 350)
   }
 
   function resetSession() {
@@ -127,8 +131,17 @@ export function useTypingEngine() {
   }
 
   return {
-    stats, fetcher, typingActive, showResults, fileProgress,
-    loadCode, loadRandomFile, processChar, processBackspace,
-    resetSession, retrySession, cleanup,
+    stats,
+    fetcher,
+    typingActive,
+    showResults,
+    fileProgress,
+    loadCode,
+    loadRandomFile,
+    processChar,
+    processBackspace,
+    resetSession,
+    retrySession,
+    cleanup,
   }
 }

@@ -1,26 +1,120 @@
 import type { TokenType } from '~/types'
 
 const KEYWORDS = new Set([
-  'const','let','var','function','return','if','else','for','while','do',
-  'class','import','export','from','default','new','this','typeof','instanceof',
-  'async','await','try','catch','finally','throw','switch','case','break',
-  'continue','true','false','null','undefined','void','in','of','extends',
-  'implements','interface','type','enum','readonly','abstract','static',
-  'super','yield','delete','as','is','public','private','protected',
-  'module','require','declare','namespace','keyof','infer','satisfies',
+  'const',
+  'let',
+  'var',
+  'function',
+  'return',
+  'if',
+  'else',
+  'for',
+  'while',
+  'do',
+  'class',
+  'import',
+  'export',
+  'from',
+  'default',
+  'new',
+  'this',
+  'typeof',
+  'instanceof',
+  'async',
+  'await',
+  'try',
+  'catch',
+  'finally',
+  'throw',
+  'switch',
+  'case',
+  'break',
+  'continue',
+  'true',
+  'false',
+  'null',
+  'undefined',
+  'void',
+  'in',
+  'of',
+  'extends',
+  'implements',
+  'interface',
+  'type',
+  'enum',
+  'readonly',
+  'abstract',
+  'static',
+  'super',
+  'yield',
+  'delete',
+  'as',
+  'is',
+  'public',
+  'private',
+  'protected',
+  'module',
+  'require',
+  'declare',
+  'namespace',
+  'keyof',
+  'infer',
+  'satisfies',
 ])
 
 const CONTROL = new Set([
-  'if','else','for','while','do','switch','case','break','continue',
-  'return','throw','try','catch','finally','yield','await',
+  'if',
+  'else',
+  'for',
+  'while',
+  'do',
+  'switch',
+  'case',
+  'break',
+  'continue',
+  'return',
+  'throw',
+  'try',
+  'catch',
+  'finally',
+  'yield',
+  'await',
 ])
 
 const BUILTIN = new Set([
-  'console','window','document','Math','JSON','Object','Array','String',
-  'Number','Boolean','Promise','Map','Set','WeakMap','WeakSet','Symbol',
-  'RegExp','Error','TypeError','RangeError','Date','parseInt','parseFloat',
-  'setTimeout','setInterval','clearTimeout','clearInterval','fetch',
-  'process','global','globalThis','Proxy','Reflect',
+  'console',
+  'window',
+  'document',
+  'Math',
+  'JSON',
+  'Object',
+  'Array',
+  'String',
+  'Number',
+  'Boolean',
+  'Promise',
+  'Map',
+  'Set',
+  'WeakMap',
+  'WeakSet',
+  'Symbol',
+  'RegExp',
+  'Error',
+  'TypeError',
+  'RangeError',
+  'Date',
+  'parseInt',
+  'parseFloat',
+  'setTimeout',
+  'setInterval',
+  'clearTimeout',
+  'clearInterval',
+  'fetch',
+  'process',
+  'global',
+  'globalThis',
+  'Proxy',
+  'Reflect',
 ])
 
 function isWordChar(c: string | undefined): boolean {
@@ -33,7 +127,9 @@ export function useTokenizer() {
     let i = 0
     const len = code.length
 
-    function peek(offset: number): string { return code[i + offset] || '' }
+    function peek(offset: number): string {
+      return code[i + offset] || ''
+    }
 
     function mark(from: number, to: number, type: TokenType) {
       for (let j = from; j < to && j < len; j++) tokens[j] = type
@@ -63,8 +159,14 @@ export function useTokenizer() {
         const start = i
         i++
         while (i < len) {
-          if (code[i] === '\\') { i += 2; continue }
-          if (code[i] === quote) { i++; break }
+          if (code[i] === '\\') {
+            i += 2
+            continue
+          }
+          if (code[i] === quote) {
+            i++
+            break
+          }
           if (quote !== '`' && code[i] === '\n') break
           i++
         }
@@ -103,7 +205,8 @@ export function useTokenizer() {
               i++
             } else if (code[i] === '"' || code[i] === "'") {
               const qs = i
-              const q = code[i]; i++
+              const q = code[i]
+              i++
               while (i < len && code[i] !== q) i++
               i++
               mark(qs, i, 'string')
@@ -149,7 +252,13 @@ export function useTokenizer() {
           mark(start, i, 'boolean')
         } else if (word === 'null' || word === 'undefined' || word === 'void') {
           mark(start, i, 'null')
-        } else if (word === 'import' || word === 'export' || word === 'from' || word === 'as' || word === 'default') {
+        } else if (
+          word === 'import' ||
+          word === 'export' ||
+          word === 'from' ||
+          word === 'as' ||
+          word === 'default'
+        ) {
           mark(start, i, 'import')
         } else if (KEYWORDS.has(word)) {
           mark(start, i, 'keyword')

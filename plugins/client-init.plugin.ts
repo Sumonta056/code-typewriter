@@ -2,7 +2,7 @@ import { useSettingsStore } from '~/stores/settings'
 import { useSnippetsStore } from '~/stores/snippets'
 import { useHistoryStore } from '~/stores/history'
 
-export default defineNuxtPlugin(async () => {
+export default defineNuxtPlugin(() => {
   if (!import.meta.client) return
 
   const settingsStore = useSettingsStore()
@@ -11,5 +11,6 @@ export default defineNuxtPlugin(async () => {
 
   settingsStore.loadFromStorage()
   historyStore.loadFromStorage()
-  await snippetsStore.loadSnippets()
+  // Fire and forget — UI handles loading state via fetcher.isLoading
+  snippetsStore.loadSnippets()
 })

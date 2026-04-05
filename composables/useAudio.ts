@@ -1,25 +1,36 @@
 let audioCtx: AudioContext | null = null
+let cachedBuffer: AudioBuffer | null = null
+
+function ensureAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (
+      window.AudioContext ||
+      (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+    )()
+  }
+  if (!cachedBuffer) {
+    const ctx = audioCtx
+    const duration = 0.018
+    const sampleCount = Math.ceil(ctx.sampleRate * duration)
+    cachedBuffer = ctx.createBuffer(1, sampleCount, ctx.sampleRate)
+    const data = cachedBuffer.getChannelData(0)
+    for (let i = 0; i < sampleCount; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (sampleCount * 0.25))
+    }
+  }
+}
 
 export function useAudio() {
   function playKeySound(enabled: boolean) {
     if (!enabled) return
-    if (!audioCtx) audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)()
+    ensureAudioContext()
 
-    const ctx = audioCtx
+    const ctx = audioCtx!
     const now = ctx.currentTime
-
-    // Short white-noise burst shaped like a typewriter key click
     const clickDuration = 0.012 + Math.random() * 0.006
-    const sampleCount = Math.ceil(ctx.sampleRate * clickDuration)
-    const buffer = ctx.createBuffer(1, sampleCount, ctx.sampleRate)
-    const data = buffer.getChannelData(0)
-    for (let i = 0; i < sampleCount; i++) {
-      // Exponential decay envelope on white noise
-      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (sampleCount * 0.25))
-    }
 
     const noise = ctx.createBufferSource()
-    noise.buffer = buffer
+    noise.buffer = cachedBuffer!
 
     // Band-pass to shape the "clack" frequency character
     const bandpass = ctx.createBiquadFilter()

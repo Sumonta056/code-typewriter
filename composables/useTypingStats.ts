@@ -1,3 +1,4 @@
+import { onScopeDispose } from 'vue'
 import { useTypingStore } from '~/stores/typing'
 
 export function useTypingStats() {
@@ -19,15 +20,15 @@ export function useTypingStats() {
     const elapsed = (Date.now() - store.startTime) / 1000
     const minutes = elapsed / 60
 
-    wpm.value = minutes > 0 ? Math.round((store.currentIndex / 5) / minutes) : 0
-    rawWpm.value = minutes > 0 ? Math.round((store.totalKeystrokes / 5) / minutes) : 0
+    wpm.value = minutes > 0 ? Math.round(store.currentIndex / 5 / minutes) : 0
+    rawWpm.value = minutes > 0 ? Math.round(store.totalKeystrokes / 5 / minutes) : 0
     cpm.value = minutes > 0 ? Math.round(store.currentIndex / minutes) : 0
-    accuracy.value = store.totalKeystrokes > 0
-      ? Math.round(((store.totalKeystrokes - store.totalErrors) / store.totalKeystrokes) * 100)
-      : 100
-    progress.value = store.charCount > 0
-      ? Math.round((store.currentIndex / store.charCount) * 100)
-      : 0
+    accuracy.value =
+      store.totalKeystrokes > 0
+        ? Math.round(((store.totalKeystrokes - store.totalErrors) / store.totalKeystrokes) * 100)
+        : 100
+    progress.value =
+      store.charCount > 0 ? Math.round((store.currentIndex / store.charCount) * 100) : 0
     elapsedSeconds.value = elapsed
 
     const mins = Math.floor(elapsed / 60)
@@ -51,12 +52,13 @@ export function useTypingStats() {
     if (!store.startTime) return
     const elapsed = (Date.now() - store.startTime) / 1000
     const minutes = elapsed / 60
-    wpm.value = minutes > 0 ? Math.round((store.charCount / 5) / minutes) : 0
-    rawWpm.value = minutes > 0 ? Math.round((store.totalKeystrokes / 5) / minutes) : 0
+    wpm.value = minutes > 0 ? Math.round(store.charCount / 5 / minutes) : 0
+    rawWpm.value = minutes > 0 ? Math.round(store.totalKeystrokes / 5 / minutes) : 0
     cpm.value = minutes > 0 ? Math.round(store.charCount / minutes) : 0
-    accuracy.value = store.totalKeystrokes > 0
-      ? Math.round(((store.totalKeystrokes - store.totalErrors) / store.totalKeystrokes) * 100)
-      : 100
+    accuracy.value =
+      store.totalKeystrokes > 0
+        ? Math.round(((store.totalKeystrokes - store.totalErrors) / store.totalKeystrokes) * 100)
+        : 100
     progress.value = 100
     elapsedSeconds.value = elapsed
 
@@ -75,8 +77,21 @@ export function useTypingStats() {
     progress.value = 0
   }
 
+  onScopeDispose(() => {
+    stopTimer()
+  })
+
   return {
-    wpm, rawWpm, cpm, accuracy, elapsedFormatted, elapsedSeconds, progress,
-    startTimer, stopTimer, computeFinalStats, resetStats,
+    wpm,
+    rawWpm,
+    cpm,
+    accuracy,
+    elapsedFormatted,
+    elapsedSeconds,
+    progress,
+    startTimer,
+    stopTimer,
+    computeFinalStats,
+    resetStats,
   }
 }

@@ -38,7 +38,10 @@ export function useGithubFetcher() {
     return `https://api.github.com/repos/${parsed.owner}/${parsed.repo}/contents/${parsed.path}?ref=${parsed.branch}`
   }
 
-  async function fetchCode(url: string, maxLines: number): Promise<{ code: string; fileName: string } | null> {
+  async function fetchCode(
+    url: string,
+    maxLines: number,
+  ): Promise<{ code: string; fileName: string } | null> {
     isLoading.value = true
 
     try {
@@ -52,7 +55,9 @@ export function useGithubFetcher() {
             headers: { Accept: 'application/vnd.github.v3.raw' },
           })
           if (res.ok) code = await res.text()
-        } catch { /* fall through */ }
+        } catch {
+          /* fall through */
+        }
 
         if (!code) {
           const rawUrl = buildRawUrl(parsed)
@@ -75,7 +80,7 @@ export function useGithubFetcher() {
 
       code = code
         .split('\n')
-        .map(l => l.trimEnd())
+        .map((l) => l.trimEnd())
         .join('\n')
         .trimEnd()
 

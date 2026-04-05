@@ -21,7 +21,7 @@ Instead of random words, you practice typing actual source code from popular ope
 ## Tech Stack
 
 | Layer     | Technology          |
-|-----------|---------------------|
+| --------- | ------------------- |
 | Framework | Nuxt 3              |
 | UI        | Vue 3 + TypeScript  |
 | State     | Pinia               |

@@ -1,6 +1,7 @@
 # Code Typewriter — Nuxt 3 Migration Plan
 
 ## Context
+
 The Code Typewriter project is currently a single-page vanilla HTML/CSS/JS app (4 files, ~2,200 lines). It lets users practice typing real code fetched from GitHub, with syntax highlighting, live stats, and settings. The goal is to migrate to **Nuxt 3 + Vue 3 (Composition API) + TypeScript + Pinia**, following best practices, keeping every component under 200-300 lines, adding a Profile page, and ensuring buttery smooth performance and accessibility.
 
 ---
@@ -90,21 +91,25 @@ code-typewriter/
 ## Pinia Stores
 
 ### `stores/typing.ts` — Session State
+
 - **State**: `code`, `fileName`, `fileUrl`, `tokens: TokenType[]`, `charStates: CharState[]` (shallowRef), `currentIndex`, `totalErrors`, `totalKeystrokes`, `startTime`, `isComplete`, `isActive`
 - **Getters**: `currentChar`, `progressPercent`, `charCount`, `isSessionReady`
 - **Actions**: `setupSession()`, `advanceCorrect()`, `advanceIncorrect()`, `goBack()`, `markComplete()`, `reset()`
 
 ### `stores/settings.ts` — User Preferences
+
 - **State**: `fontSize` (14), `tabSize` (2), `maxLines` (50), `sound` (false), `lineNumbers` (true), `smoothCaret` (true)
 - **Actions**: `updateNumeric()`, `toggleBoolean()`, `loadFromStorage()`, `saveToStorage()`, `applyCssVariables()`
 - **Persistence**: `localStorage` key `codeTypeSettings`, synced via watcher
 
 ### `stores/snippets.ts` — Language Data
+
 - **State**: `languages[]`, `selectedLanguageId`, `isLoaded`
 - **Actions**: `loadSnippets()`, `selectLanguage()`
 - **Getters**: `selectedLanguage`, `randomFile`
 
 ### `stores/history.ts` — Typing History (NEW)
+
 - **State**: `entries: HistoryEntry[]`
 - **Actions**: `addEntry()`, `clearHistory()`
 - **Getters**: `averageWpm`, `bestWpm`, `averageAccuracy`, `totalSessions`, `recentEntries()`, `wpmOverTime`
@@ -114,15 +119,15 @@ code-typewriter/
 
 ## Composables — Migration Mapping
 
-| Composable | Source (app.js lines) | Key exports |
-|---|---|---|
-| `useTokenizer.ts` | 309-517 | `tokenize(code): TokenType[]` |
-| `useTypingEngine.ts` | 274-306, 572-628 | `setupSession()`, `processCharacter()`, `handleBackspace()`, `reset()` |
-| `useGithubFetcher.ts` | 101-210 | `isLoading`, `parseGitHubUrl()`, `fetchCode()` |
-| `useAudio.ts` | 80-94 | `playKeySound()` |
-| `useTypingStats.ts` | 665-724 | `wpm`, `accuracy`, `elapsedFormatted`, `progress`, `cpm`, `rawWpm`, `startTimer()`, `stopTimer()` |
-| `useScrollTracker.ts` | 644-662 | `scrollToIndex()` |
-| `useKeyboardHandler.ts` | 544-569 | `handleKeyDown()` |
+| Composable              | Source (app.js lines) | Key exports                                                                                       |
+| ----------------------- | --------------------- | ------------------------------------------------------------------------------------------------- |
+| `useTokenizer.ts`       | 309-517               | `tokenize(code): TokenType[]`                                                                     |
+| `useTypingEngine.ts`    | 274-306, 572-628      | `setupSession()`, `processCharacter()`, `handleBackspace()`, `reset()`                            |
+| `useGithubFetcher.ts`   | 101-210               | `isLoading`, `parseGitHubUrl()`, `fetchCode()`                                                    |
+| `useAudio.ts`           | 80-94                 | `playKeySound()`                                                                                  |
+| `useTypingStats.ts`     | 665-724               | `wpm`, `accuracy`, `elapsedFormatted`, `progress`, `cpm`, `rawWpm`, `startTimer()`, `stopTimer()` |
+| `useScrollTracker.ts`   | 644-662               | `scrollToIndex()`                                                                                 |
+| `useKeyboardHandler.ts` | 544-569               | `handleKeyDown()`                                                                                 |
 
 ---
 
@@ -164,10 +169,13 @@ code-typewriter/
 ## Pages
 
 ### `pages/index.vue` (~120 lines)
+
 Main typing page. Composes: AppHeader, ToolbarMain, UrlPanel, SettingsPanel, FileTabBar, EditorFrame > TypingContainer, ProgressTrack, HiddenInput, ResultsOverlay, LoadingOverlay. Local state: `urlOpen`, `settingsOpen`. Orchestrates composables.
 
 ### `pages/profile.vue` (~180 lines)
+
 **NEW page.** Shows:
+
 - Summary cards: total sessions, average WPM, best WPM, average accuracy
 - Table of recent sessions (file, language, WPM, accuracy, time, date)
 - "Clear History" button with confirmation
@@ -177,25 +185,25 @@ Main typing page. Composes: AppHeader, ToolbarMain, UrlPanel, SettingsPanel, Fil
 
 ## Implementation Order
 
-| Step | What | Depends on |
-|---|---|---|
-| 1 | Scaffold Nuxt + install Pinia + create dirs + `nuxt.config.ts` | — |
-| 2 | TypeScript types (`types/`) | — |
-| 3 | Global CSS (`assets/css/`) | — |
-| 4 | Pinia stores (settings → snippets → typing → history) | types |
-| 5 | Pure composables (`useTokenizer`, `useAudio`) | types |
-| 6 | Layout + base components (`default.vue`, `AppScanlines`, `AppLogo`, `BaseButton`, `IconButton`) | CSS |
-| 7 | `AppHeader` + toolbar + panels | stores, base components |
-| 8 | `useGithubFetcher` composable | types |
-| 9 | Editor components (`FileTabBar`, `TypingPlaceholder`, `LineNumbers`, `CodeDisplay`, `TypingContainer`, `EditorFrame`, `ProgressTrack`) | stores, tokenizer |
-| 10 | Typing engine (`useTypingEngine`, `useKeyboardHandler`, `useScrollTracker`, `HiddenInput`) | stores, editor |
-| 11 | Stats (`useTypingStats`, `StatBar`, `StatBlock`, `LiveStats`) | stores |
-| 12 | Results (`ResultItem`, `ResultsCard`, `ResultsOverlay`) | stores, stats |
-| 13 | `LoadingOverlay` | — |
-| 14 | Wire `pages/index.vue` | all above |
-| 15 | `pages/profile.vue` + history store integration | history store |
-| 16 | Accessibility pass (ARIA, focus traps, reduced motion) | all above |
-| 17 | Performance tuning + testing | all above |
+| Step | What                                                                                                                                   | Depends on              |
+| ---- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| 1    | Scaffold Nuxt + install Pinia + create dirs + `nuxt.config.ts`                                                                         | —                       |
+| 2    | TypeScript types (`types/`)                                                                                                            | —                       |
+| 3    | Global CSS (`assets/css/`)                                                                                                             | —                       |
+| 4    | Pinia stores (settings → snippets → typing → history)                                                                                  | types                   |
+| 5    | Pure composables (`useTokenizer`, `useAudio`)                                                                                          | types                   |
+| 6    | Layout + base components (`default.vue`, `AppScanlines`, `AppLogo`, `BaseButton`, `IconButton`)                                        | CSS                     |
+| 7    | `AppHeader` + toolbar + panels                                                                                                         | stores, base components |
+| 8    | `useGithubFetcher` composable                                                                                                          | types                   |
+| 9    | Editor components (`FileTabBar`, `TypingPlaceholder`, `LineNumbers`, `CodeDisplay`, `TypingContainer`, `EditorFrame`, `ProgressTrack`) | stores, tokenizer       |
+| 10   | Typing engine (`useTypingEngine`, `useKeyboardHandler`, `useScrollTracker`, `HiddenInput`)                                             | stores, editor          |
+| 11   | Stats (`useTypingStats`, `StatBar`, `StatBlock`, `LiveStats`)                                                                          | stores                  |
+| 12   | Results (`ResultItem`, `ResultsCard`, `ResultsOverlay`)                                                                                | stores, stats           |
+| 13   | `LoadingOverlay`                                                                                                                       | —                       |
+| 14   | Wire `pages/index.vue`                                                                                                                 | all above               |
+| 15   | `pages/profile.vue` + history store integration                                                                                        | history store           |
+| 16   | Accessibility pass (ARIA, focus traps, reduced motion)                                                                                 | all above               |
+| 17   | Performance tuning + testing                                                                                                           | all above               |
 
 ---
 
@@ -220,6 +228,7 @@ Main typing page. Composes: AppHeader, ToolbarMain, UrlPanel, SettingsPanel, Fil
 ---
 
 ## Source Files
+
 - `/Users/cefalo_1/Documents/Projects/code-typewriter/app.js` (862 lines) — all logic to decompose
 - `/Users/cefalo_1/Documents/Projects/code-typewriter/style.css` (1035 lines) — styles to split
 - `/Users/cefalo_1/Documents/Projects/code-typewriter/index.html` (238 lines) — markup to componentize

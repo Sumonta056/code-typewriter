@@ -55,9 +55,6 @@ export const useTypingStore = defineStore('typing', () => {
 
   function goBack() {
     if (currentIndex.value <= 0) return
-    if (charStates.value[currentIndex.value - 1] === 'incorrect') {
-      totalErrors.value = Math.max(0, totalErrors.value - 1)
-    }
     currentIndex.value--
     charStates.value[currentIndex.value] = 'pending'
     triggerRef(charStates)
@@ -86,11 +83,26 @@ export const useTypingStore = defineStore('typing', () => {
   }
 
   return {
-    code, fileName, fileUrl, tokens, charStates,
-    currentIndex, totalErrors, totalKeystrokes, startTime,
-    isComplete, isActive,
-    progressPercent, charCount, isSessionReady,
-    setupSession, advanceCorrect, advanceIncorrect, goBack,
-    markComplete, reset, startTimer,
+    code,
+    fileName,
+    fileUrl,
+    tokens,
+    charStates,
+    currentIndex,
+    totalErrors,
+    totalKeystrokes,
+    startTime,
+    isComplete,
+    isActive,
+    progressPercent,
+    charCount,
+    isSessionReady,
+    setupSession,
+    advanceCorrect,
+    advanceIncorrect,
+    goBack,
+    markComplete,
+    reset,
+    startTimer,
   }
 })
