@@ -1,0 +1,51 @@
+/* Page transitions */
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.25s var(--ease);
+}
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+}
+
+/* Fade transitions */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s var(--ease);
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Slide-fade transitions */
+.slide-fade-enter-active {
+  transition: all 0.35s var(--ease);
+}
+.slide-fade-leave-active {
+  transition: all 0.25s var(--ease);
+}
+.slide-fade-enter-from {
+  transform: translateY(12px);
+  opacity: 0;
+}
+.slide-fade-leave-to {
+  transform: translateY(-8px);
+  opacity: 0;
+}
+
+/* Scale-fade for overlays */
+.scale-fade-enter-active {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.scale-fade-leave-active {
+  transition: all 0.25s var(--ease);
+}
+.scale-fade-enter-from {
+  transform: scale(0.96) translateY(24px);
+  opacity: 0;
+}
+.scale-fade-leave-to {
+  transform: scale(0.98);
+  opacity: 0;
+}

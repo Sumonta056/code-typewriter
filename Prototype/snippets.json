@@ -1,0 +1,58 @@
+{
+  "languages": [
+    {
+      "id": "vuejs",
+      "name": "Vue JS",
+      "extension": ".vue",
+      "files": [
+        {
+          "name": "TodoMVC App",
+          "url": "https://raw.githubusercontent.com/vuejs/vue/dev/examples/todomvc/app.js"
+        },
+        {
+          "name": "Vue Reactivity - ref.ts",
+          "url": "https://raw.githubusercontent.com/vuejs/core/main/packages/reactivity/src/ref.ts"
+        },
+        {
+          "name": "Vue Shared Utilities",
+          "url": "https://raw.githubusercontent.com/vuejs/core/main/packages/shared/src/general.ts"
+        },
+        {
+          "name": "Vue Runtime - vnode.ts",
+          "url": "https://raw.githubusercontent.com/vuejs/core/main/packages/runtime-core/src/vnode.ts"
+        },
+        {
+          "name": "Vue Compiler - parse.ts",
+          "url": "https://raw.githubusercontent.com/vuejs/core/main/packages/compiler-core/src/parse.ts"
+        }
+      ]
+    },
+    {
+      "id": "nuxtjs",
+      "name": "Nuxt JS",
+      "extension": ".ts",
+      "files": [
+        {
+          "name": "Nuxt App Entry",
+          "url": "https://raw.githubusercontent.com/nuxt/nuxt/main/packages/nuxt/src/app/entry.ts"
+        },
+        {
+          "name": "Nuxt Composables - fetch",
+          "url": "https://raw.githubusercontent.com/nuxt/nuxt/main/packages/nuxt/src/app/composables/fetch.ts"
+        },
+        {
+          "name": "Nuxt Router Utilities",
+          "url": "https://raw.githubusercontent.com/nuxt/nuxt/main/packages/nuxt/src/app/composables/router.ts"
+        },
+        {
+          "name": "Nuxt Head Composable",
+          "url": "https://raw.githubusercontent.com/nuxt/nuxt/main/packages/nuxt/src/app/composables/head.ts"
+        },
+        {
+          "name": "Nuxt State Composable",
+          "url": "https://raw.githubusercontent.com/nuxt/nuxt/main/packages/nuxt/src/app/composables/state.ts"
+        }
+      ]
+    }
+  ]
+}
