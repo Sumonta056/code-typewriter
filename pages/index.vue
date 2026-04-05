@@ -147,14 +147,14 @@
 </template>
 
 <script setup lang="ts">
-  import { useTypingStore } from '~/stores/typing'
-  import { useSettingsStore } from '~/stores/settings'
-  import { useSnippetsStore } from '~/stores/snippets'
-  import { useBookmarksStore } from '~/stores/bookmarks'
-  import { useTypingEngine } from '~/composables/useTypingEngine'
   import { useKeyboardHandler } from '~/composables/useKeyboardHandler'
   import { useScrollTracker } from '~/composables/useScrollTracker'
+  import { useTypingEngine } from '~/composables/useTypingEngine'
   import type { BookmarkedFile } from '~/stores/bookmarks'
+  import { useBookmarksStore } from '~/stores/bookmarks'
+  import { useSettingsStore } from '~/stores/settings'
+  import { useSnippetsStore } from '~/stores/snippets'
+  import { useTypingStore } from '~/stores/typing'
 
   const typingStore = useTypingStore()
   const settingsStore = useSettingsStore()
