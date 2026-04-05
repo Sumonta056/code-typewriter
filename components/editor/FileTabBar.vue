@@ -15,7 +15,26 @@
       <span>{{ fileName }}</span>
       <span v-if="progress" class="file-tab-badge">{{ progress }}</span>
     </div>
-    <div class="file-tab-filler" />
+    <div class="file-tab-filler">
+      <Transition name="stats-fade">
+        <div v-if="statsVisible" class="tab-stats">
+          <span class="tab-stat tab-stat--wpm">
+            <span class="tab-stat-icon">⚡</span>
+            <span class="tab-stat-value">{{ wpm }}</span>
+            <span class="tab-stat-label">wpm</span>
+          </span>
+          <span class="tab-stat tab-stat--acc">
+            <span class="tab-stat-icon">◎</span>
+            <span class="tab-stat-value">{{ accuracy }}%</span>
+            <span class="tab-stat-label">acc</span>
+          </span>
+          <span class="tab-stat tab-stat--time">
+            <span class="tab-stat-icon">◷</span>
+            <span class="tab-stat-value">{{ elapsed }}</span>
+          </span>
+        </div>
+      </Transition>
+    </div>
   </div>
 </template>
 
@@ -23,6 +42,10 @@
   defineProps<{
     fileName: string
     progress?: string
+    statsVisible?: boolean
+    wpm?: number
+    accuracy?: number
+    elapsed?: string
   }>()
 </script>
 
@@ -68,5 +91,64 @@
   .file-tab-filler {
     flex: 1;
     border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 12px;
+  }
+  .tab-stats {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tab-stat {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-lit);
+  }
+  .tab-stat-icon {
+    font-size: 0.65rem;
+    line-height: 1;
+    opacity: 0.75;
+  }
+  .tab-stat-value {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+  .tab-stat-label {
+    font-family: var(--font-code);
+    font-size: 0.6rem;
+    color: var(--text-faint);
+    text-transform: lowercase;
+    line-height: 1;
+  }
+  .tab-stat--wpm .tab-stat-value {
+    color: var(--accent);
+  }
+  .tab-stat--acc .tab-stat-value {
+    color: var(--green);
+  }
+  .tab-stat--time .tab-stat-value {
+    color: var(--purple);
+  }
+
+  /* Transition */
+  .stats-fade-enter-active,
+  .stats-fade-leave-active {
+    transition:
+      opacity 0.35s var(--ease),
+      transform 0.35s var(--ease);
+  }
+  .stats-fade-enter-from,
+  .stats-fade-leave-to {
+    opacity: 0;
+    transform: translateX(8px);
   }
 </style>

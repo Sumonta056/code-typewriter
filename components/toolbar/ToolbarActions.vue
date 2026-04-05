@@ -32,6 +32,33 @@
         />
       </svg>
     </UiIconButton>
+
+    <!-- Pause button — only visible when session is active -->
+    <UiIconButton
+      v-if="canPause"
+      :is-active="isPaused"
+      :title="isPaused ? 'Resume (Space)' : 'Pause (Space)'"
+      :class="{ 'pause-btn--paused': isPaused }"
+      @click="$emit('togglePause')"
+    >
+      <!-- Pause icon -->
+      <svg
+        v-if="!isPaused"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        stroke="none"
+      >
+        <rect x="6" y="4" width="4" height="16" rx="1" />
+        <rect x="14" y="4" width="4" height="16" rx="1" />
+      </svg>
+      <!-- Play icon -->
+      <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+        <polygon points="5,3 19,12 5,21" />
+      </svg>
+    </UiIconButton>
+
     <div class="toolbar-separator" />
     <UiBaseButton variant="glow" @click="$emit('random')">
       <svg
@@ -75,11 +102,14 @@
   defineProps<{
     urlOpen: boolean
     settingsOpen: boolean
+    canPause: boolean
+    isPaused: boolean
   }>()
 
   defineEmits<{
     toggleUrl: []
     toggleSettings: []
+    togglePause: []
     random: []
     reset: []
   }>()
@@ -97,5 +127,9 @@
     height: 24px;
     background: var(--border);
     margin: 0 4px;
+  }
+
+  .pause-btn--paused :deep(svg) {
+    color: var(--accent);
   }
 </style>

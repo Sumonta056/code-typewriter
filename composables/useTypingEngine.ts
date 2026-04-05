@@ -19,6 +19,9 @@ export function useTypingEngine() {
 
   const showResults = ref(false)
   const typingActive = ref(false)
+  const isNewPB = ref(false)
+  // Track error positions per character during session
+  const sessionErrorMap = ref<Record<string, number>>({})
   let typingTimeout: ReturnType<typeof setTimeout> | null = null
 
   const fileProgress = computed(() => {
@@ -47,6 +50,8 @@ export function useTypingEngine() {
     typingStore.setupSession(code, tokens, result.fileName || name, url)
     stats.resetStats()
     showResults.value = false
+    isNewPB.value = false
+    sessionErrorMap.value = {}
     return true
   }
 
@@ -60,6 +65,7 @@ export function useTypingEngine() {
    * Returns 'complete' when the session finishes, 'continue' otherwise.
    */
   function processChar(char: string): 'complete' | 'continue' | null {
+    if (typingStore.isPaused) return null
     if (typingStore.currentIndex >= typingStore.charCount) return null
 
     if (!typingStore.startTime) {
@@ -71,8 +77,13 @@ export function useTypingEngine() {
     playKeySound(settingsStore.settings.sound)
 
     const expected = typingStore.code[typingStore.currentIndex]
-    if (char === expected) typingStore.advanceCorrect()
-    else typingStore.advanceIncorrect()
+    if (char === expected) {
+      typingStore.advanceCorrect()
+    } else {
+      typingStore.advanceIncorrect()
+      // Track which expected character was missed
+      sessionErrorMap.value[expected] = (sessionErrorMap.value[expected] || 0) + 1
+    }
 
     if (typingStore.currentIndex >= typingStore.charCount) {
       completeTyping()
@@ -82,15 +93,28 @@ export function useTypingEngine() {
   }
 
   function processBackspace() {
+    if (typingStore.isPaused) return
     if (typingStore.currentIndex <= 0) return
     setTypingActive()
     typingStore.goBack()
+  }
+
+  function togglePause() {
+    if (!typingStore.isActive || typingStore.isComplete) return
+    if (typingStore.isPaused) {
+      typingStore.resume()
+    } else {
+      typingStore.pause()
+    }
   }
 
   function completeTyping() {
     typingStore.markComplete()
     stats.stopTimer()
     stats.computeFinalStats()
+
+    const prevBest = historyStore.bestWpm
+    isNewPB.value = stats.wpm.value > prevBest
 
     historyStore.addEntry({
       fileName: typingStore.fileName,
@@ -104,6 +128,7 @@ export function useTypingEngine() {
       chars: typingStore.charCount,
       errors: typingStore.totalErrors,
       date: new Date().toISOString(),
+      errorMap: { ...sessionErrorMap.value },
     })
 
     setTimeout(() => {
@@ -117,6 +142,8 @@ export function useTypingEngine() {
     stats.stopTimer()
     stats.resetStats()
     showResults.value = false
+    isNewPB.value = false
+    sessionErrorMap.value = {}
   }
 
   function retrySession() {
@@ -124,6 +151,8 @@ export function useTypingEngine() {
     typingStore.reset()
     stats.stopTimer()
     stats.resetStats()
+    isNewPB.value = false
+    sessionErrorMap.value = {}
   }
 
   function cleanup() {
@@ -136,10 +165,12 @@ export function useTypingEngine() {
     typingActive,
     showResults,
     fileProgress,
+    isNewPB,
     loadCode,
     loadRandomFile,
     processChar,
     processBackspace,
+    togglePause,
     resetSession,
     retrySession,
     cleanup,

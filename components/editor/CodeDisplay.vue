@@ -33,7 +33,9 @@
     token: TokenType | undefined,
     isCurrent: boolean,
   ): string {
-    return `char ${state || 'pending'} syn-${token || 'plain'}${isCurrent ? ' current' : ''}`
+    let cls = `char ${state || 'pending'} syn-${token || 'plain'}`
+    if (isCurrent) cls += ' current'
+    return cls
   }
 
   defineExpose({ containerEl, charEls })
@@ -82,20 +84,20 @@
     contain: layout style;
   }
 
-  /* ── States (opacity only — no per-char transition) ── */
+  /* ── States ── */
   :deep(.char.pending) {
     opacity: 0.3;
   }
   :deep(.char.correct) {
     opacity: 1;
   }
+
+  /* Word-level error: softer amber highlight instead of bright red */
   :deep(.char.incorrect) {
-    color: var(--red) !important;
+    color: var(--orange) !important;
     opacity: 1;
-    background: rgba(var(--red-rgb), 0.15);
-    text-decoration: underline;
-    text-decoration-color: rgba(var(--red-rgb), 0.5);
-    text-underline-offset: 3px;
+    background: rgba(var(--red-rgb), 0.12);
+    border-bottom: 2px solid rgba(var(--red-rgb), 0.45);
   }
 
   /* ── Syntax colors (shared for pending + correct) ── */
@@ -167,7 +169,7 @@
     color: var(--syn-tag-attr-special);
   }
 
-  /* ── Cursor (only element with animation) ── */
+  /* ── Cursor ── */
   :deep(.char.current::before) {
     content: '';
     position: absolute;

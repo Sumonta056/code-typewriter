@@ -11,6 +11,7 @@ export interface HistoryEntry {
   chars: number
   errors: number
   date: string
+  errorMap?: Record<string, number>
 }
 
 export interface LanguageStat {

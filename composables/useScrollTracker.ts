@@ -17,21 +17,36 @@ export function useScrollTracker() {
       const r = el.getBoundingClientRect()
       const cr = containerEl.getBoundingClientRect()
 
-      const topMargin = 50
-      const bottomMargin = 50
+      // Extra vertical padding so the cursor sits in the middle third
+      const topMargin = 80
+      const bottomMargin = 80
       const leftMargin = 80
       const rightMargin = 40
 
-      if (r.top < cr.top + topMargin) {
-        containerEl.scrollTop -= cr.top + topMargin - r.top
-      } else if (r.bottom > cr.bottom - bottomMargin) {
-        containerEl.scrollTop += r.bottom - cr.bottom + bottomMargin
-      }
+      const needsScrollV = r.top < cr.top + topMargin || r.bottom > cr.bottom - bottomMargin
+      const needsScrollH = r.left < cr.left + leftMargin || r.right > cr.right - rightMargin
 
-      if (r.left < cr.left + leftMargin) {
-        containerEl.scrollLeft -= cr.left + leftMargin - r.left
-      } else if (r.right > cr.right - rightMargin) {
-        containerEl.scrollLeft += r.right - cr.right + rightMargin
+      if (needsScrollV || needsScrollH) {
+        let targetTop = containerEl.scrollTop
+        let targetLeft = containerEl.scrollLeft
+
+        if (r.top < cr.top + topMargin) {
+          targetTop -= cr.top + topMargin - r.top
+        } else if (r.bottom > cr.bottom - bottomMargin) {
+          targetTop += r.bottom - cr.bottom + bottomMargin
+        }
+
+        if (r.left < cr.left + leftMargin) {
+          targetLeft -= cr.left + leftMargin - r.left
+        } else if (r.right > cr.right - rightMargin) {
+          targetLeft += r.right - cr.right + rightMargin
+        }
+
+        containerEl.scrollTo({
+          top: targetTop,
+          left: targetLeft,
+          behavior: 'smooth',
+        })
       }
     })
   }

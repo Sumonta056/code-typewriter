@@ -32,6 +32,23 @@
         :model-value="settings.smoothCaret"
         @toggle="toggleBoolean('smoothCaret')"
       />
+
+      <!-- Theme switcher -->
+      <div class="theme-setting">
+        <span class="theme-label">Theme</span>
+        <div class="theme-btns">
+          <button
+            v-for="t in themes"
+            :key="t.id"
+            :class="['theme-btn', { active: settings.theme === t.id }]"
+            :title="t.label"
+            @click="setTheme(t.id as 'dark' | 'monokai' | 'solarized')"
+          >
+            <span class="theme-dot" :style="{ background: t.color }" />
+            {{ t.label }}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -43,7 +60,13 @@
 
   const settingsStore = useSettingsStore()
   const { settings } = settingsStore
-  const { updateNumeric, toggleBoolean } = settingsStore
+  const { updateNumeric, toggleBoolean, setTheme } = settingsStore
+
+  const themes = [
+    { id: 'dark', label: 'Dark', color: '#58a6ff' },
+    { id: 'monokai', label: 'Monokai', color: '#a6e22e' },
+    { id: 'solarized', label: 'Solarized', color: '#268bd2' },
+  ]
 </script>
 
 <style scoped>
@@ -56,7 +79,7 @@
     margin-bottom: 0;
   }
   .settings-panel.open {
-    max-height: 200px;
+    max-height: 280px;
     margin-bottom: 12px;
   }
   .settings-grid {
@@ -69,7 +92,57 @@
     padding: 16px 20px;
   }
 
+  /* Theme switcher */
+  .theme-setting {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .theme-label {
+    font-family: var(--font-code);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    min-width: 48px;
+  }
+  .theme-btns {
+    display: flex;
+    gap: 6px;
+  }
+  .theme-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: var(--font-code);
+    font-size: 0.68rem;
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+  }
+  .theme-btn:hover {
+    border-color: var(--border-lit);
+    color: var(--text);
+  }
+  .theme-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.08);
+  }
+  .theme-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
   @media (max-width: 768px) {
+    .settings-panel.open {
+      max-height: 400px;
+    }
     .settings-grid {
       grid-template-columns: repeat(2, 1fr);
     }

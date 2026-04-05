@@ -1,6 +1,7 @@
 <template>
   <div class="results-card">
     <div class="results-badge">COMPLETED</div>
+    <div v-if="isNewPB" class="pb-badge"><span class="pb-star">★</span> New Personal Best!</div>
     <div class="results-header">
       <h2>Session Report</h2>
       <p class="results-file">
@@ -9,17 +10,17 @@
     </div>
     <div class="results-hero">
       <div class="hero-wpm">
-        <span class="hero-value">{{ wpm }}</span>
+        <span :key="'wpm-' + animatedWpm" class="hero-value">{{ animatedWpm }}</span>
         <span class="hero-unit">WPM</span>
       </div>
     </div>
     <div class="results-grid">
       <ResultsResultItem icon="⏱" :value="time" label="Time" />
-      <ResultsResultItem icon="⚪" :value="accuracy + '%'" label="Accuracy" />
-      <ResultsResultItem icon="✏" :value="chars" label="Characters" />
-      <ResultsResultItem icon="❌" :value="errors" label="Errors" />
-      <ResultsResultItem icon="⚡" :value="cpm" label="CPM" />
-      <ResultsResultItem icon="📈" :value="rawWpm" label="Raw WPM" />
+      <ResultsResultItem icon="⚪" :value="animatedAccuracy + '%'" label="Accuracy" />
+      <ResultsResultItem icon="✏" :value="animatedChars" label="Characters" />
+      <ResultsResultItem icon="❌" :value="animatedErrors" label="Errors" />
+      <ResultsResultItem icon="⚡" :value="animatedCpm" label="CPM" />
+      <ResultsResultItem icon="📈" :value="animatedRawWpm" label="Raw WPM" />
     </div>
     <div class="results-actions">
       <UiBaseButton variant="glow" @click="$emit('retry')"> Retry Same </UiBaseButton>
@@ -29,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-  defineProps<{
+  const props = defineProps<{
     wpm: number
     rawWpm: number
     cpm: number
@@ -38,12 +39,86 @@
     chars: number
     errors: number
     fileName: string
+    isNewPB?: boolean
   }>()
 
   defineEmits<{
     retry: []
     newFile: []
   }>()
+
+  // Animated counters
+  const animatedWpm = ref(0)
+  const animatedRawWpm = ref(0)
+  const animatedCpm = ref(0)
+  const animatedAccuracy = ref(0)
+  const animatedChars = ref(0)
+  const animatedErrors = ref(0)
+
+  function animateValue(setter: (v: number) => void, target: number, duration = 900, delay = 0) {
+    setTimeout(() => {
+      const start = performance.now()
+      function tick(now: number) {
+        const t = Math.min((now - start) / duration, 1)
+        // Ease-out cubic
+        const eased = 1 - Math.pow(1 - t, 3)
+        setter(Math.round(eased * target))
+        if (t < 1) requestAnimationFrame(tick)
+      }
+      requestAnimationFrame(tick)
+    }, delay)
+  }
+
+  onMounted(() => {
+    animateValue(
+      (v) => {
+        animatedWpm.value = v
+      },
+      props.wpm,
+      1000,
+      100,
+    )
+    animateValue(
+      (v) => {
+        animatedRawWpm.value = v
+      },
+      props.rawWpm,
+      900,
+      200,
+    )
+    animateValue(
+      (v) => {
+        animatedCpm.value = v
+      },
+      props.cpm,
+      900,
+      250,
+    )
+    animateValue(
+      (v) => {
+        animatedAccuracy.value = v
+      },
+      props.accuracy,
+      800,
+      300,
+    )
+    animateValue(
+      (v) => {
+        animatedChars.value = v
+      },
+      props.chars,
+      700,
+      150,
+    )
+    animateValue(
+      (v) => {
+        animatedErrors.value = v
+      },
+      props.errors,
+      600,
+      350,
+    )
+  })
 </script>
 
 <style scoped>
@@ -77,8 +152,29 @@
     border: 1px solid rgba(var(--green-rgb), 0.2);
     padding: 4px 12px;
     border-radius: 4px;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
   }
+
+  .pb-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-code);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--yellow);
+    background: rgba(210, 153, 34, 0.12);
+    border: 1px solid rgba(210, 153, 34, 0.3);
+    padding: 5px 14px;
+    border-radius: 6px;
+    margin-bottom: 14px;
+    animation: pbPulse 1.5s ease-in-out 3;
+  }
+  .pb-star {
+    font-size: 0.85rem;
+  }
+
   .results-header {
     margin-bottom: 24px;
   }
@@ -114,6 +210,7 @@
     color: var(--accent);
     line-height: 1;
     text-shadow: 0 0 40px rgba(var(--accent-rgb), 0.3);
+    animation: countUp 0.5s ease;
   }
   .hero-unit {
     font-family: var(--font-code);

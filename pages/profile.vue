@@ -63,31 +63,73 @@
       </div>
     </div>
 
-    <!-- WPM Trend -->
+    <!-- WPM Trend — SVG Line Chart -->
     <section v-if="h.wpmTrend.length > 1" class="section">
       <h2 class="section-title">
         WPM Trend <span class="section-badge">Last {{ h.wpmTrend.length }} sessions</span>
       </h2>
-      <div class="trend-chart">
-        <div class="trend-y-labels">
+      <div class="chart-wrap">
+        <div class="chart-y-labels">
           <span>{{ trendMax }}</span>
           <span>{{ Math.round(trendMax / 2) }}</span>
           <span>0</span>
         </div>
-        <div class="trend-bars">
-          <div
-            v-for="(point, i) in h.wpmTrend"
+        <svg class="line-chart" :viewBox="`0 0 ${LC_W} ${LC_H}`" preserveAspectRatio="none">
+          <!-- Grid lines -->
+          <line
+            v-for="pct in [0, 50, 100]"
+            :key="pct"
+            x1="0"
+            :y1="lineChartY(pct)"
+            :x2="LC_W"
+            :y2="lineChartY(pct)"
+            class="grid-line"
+            :class="{ 'grid-line--faint': pct === 50 }"
+          />
+          <!-- Area fill -->
+          <path :d="areaPath" class="chart-area" />
+          <!-- Line -->
+          <polyline :points="chartPoints" class="chart-line" />
+          <!-- Data points -->
+          <circle
+            v-for="(pt, i) in h.wpmTrend"
             :key="i"
-            class="trend-bar-wrap"
-            :title="`${point.wpm} WPM &middot; ${point.accuracy}% &middot; ${point.fileName}`"
+            :cx="lineChartX(i)"
+            :cy="lineChartYForWpm(pt.wpm)"
+            r="3"
+            :class="['chart-dot', { 'chart-dot--latest': i === h.wpmTrend.length - 1 }]"
           >
+            <title>{{ pt.wpm }} WPM · {{ pt.accuracy }}% · {{ pt.fileName }}</title>
+          </circle>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Calendar Heatmap -->
+    <section v-if="h.totalSessions > 0" class="section">
+      <h2 class="section-title">
+        Practice Calendar
+        <span class="section-badge">Last 52 weeks</span>
+      </h2>
+      <div class="calendar-wrap">
+        <div class="calendar-grid">
+          <div v-for="(week, wi) in h.calendarData" :key="wi" class="cal-week">
             <div
-              class="trend-bar"
-              :style="{ height: point.percent + '%' }"
-              :class="{ 'trend-bar--latest': i === h.wpmTrend.length - 1 }"
+              v-for="(day, di) in week"
+              :key="di"
+              :class="['cal-day', calDayClass(day.count), { 'cal-day--today': day.isToday }]"
+              :title="
+                day.date + (day.count ? ` · ${day.count} session${day.count > 1 ? 's' : ''}` : '')
+              "
             />
-            <span v-if="h.wpmTrend.length <= 12" class="trend-bar-label">{{ point.wpm }}</span>
           </div>
+        </div>
+        <div class="cal-legend">
+          <span class="cal-legend-label">Less</span>
+          <div class="cal-legend-cells">
+            <div v-for="n in 5" :key="n" :class="['cal-day', `cal-level-${n - 1}`]" />
+          </div>
+          <span class="cal-legend-label">More</span>
         </div>
       </div>
     </section>
@@ -128,6 +170,25 @@
       </div>
     </section>
 
+    <!-- Mistake Heatmap -->
+    <section v-if="h.errorHeatmap.length > 0" class="section">
+      <h2 class="section-title">
+        Mistake Heatmap <span class="section-badge">Most-errored keys</span>
+      </h2>
+      <div class="heatmap-wrap">
+        <div
+          v-for="item in h.errorHeatmap"
+          :key="item.char"
+          class="heatmap-cell"
+          :style="{ '--heat': heatIntensity(item.count) }"
+          :title="`'${displayChar(item.char)}' — ${item.count} errors`"
+        >
+          <span class="heatmap-char">{{ displayChar(item.char) }}</span>
+          <span class="heatmap-count">{{ item.count }}</span>
+        </div>
+      </div>
+    </section>
+
     <!-- Extra Stats Row -->
     <section v-if="h.totalSessions > 0" class="section">
       <h2 class="section-title">Lifetime Numbers</h2>
@@ -158,12 +219,17 @@
     <section v-if="h.recentEntries.length > 0" class="section">
       <div class="section-header">
         <h2 class="section-title">Recent Sessions</h2>
-        <button
-          :class="['clear-btn', { 'clear-btn--confirm': confirmingClear }]"
-          @click="confirmClear"
-        >
-          {{ confirmingClear ? 'Confirm Clear?' : 'Clear History' }}
-        </button>
+        <div class="section-actions">
+          <button class="export-btn" title="Export history as CSV" @click="exportCSV">
+            ↓ Export CSV
+          </button>
+          <button
+            :class="['clear-btn', { 'clear-btn--confirm': confirmingClear }]"
+            @click="confirmClear"
+          >
+            {{ confirmingClear ? 'Confirm Clear?' : 'Clear History' }}
+          </button>
+        </div>
       </div>
       <div class="sessions-list">
         <div v-for="entry in h.recentEntries" :key="entry.id" class="session-card">
@@ -203,10 +269,104 @@
   const confirmingClear = ref(false)
   let clearTimer: ReturnType<typeof setTimeout> | null = null
 
+  // ── SVG Line Chart ──
+  const LC_W = 600
+  const LC_H = 160
+
   const trendMax = computed(() => {
     if (h.wpmTrend.length === 0) return 1
     return Math.max(...h.wpmTrend.map((p) => p.wpm), 1)
   })
+
+  function lineChartX(i: number): number {
+    if (h.wpmTrend.length <= 1) return LC_W / 2
+    return (i / (h.wpmTrend.length - 1)) * LC_W
+  }
+
+  function lineChartYForWpm(wpm: number): number {
+    const pct = trendMax.value > 0 ? wpm / trendMax.value : 0
+    return LC_H - pct * LC_H * 0.9 - LC_H * 0.05
+  }
+
+  function lineChartY(pct: number): number {
+    return LC_H - (pct / 100) * LC_H * 0.9 - LC_H * 0.05
+  }
+
+  const chartPoints = computed(() => {
+    return h.wpmTrend
+      .map((pt, i) => `${lineChartX(i).toFixed(1)},${lineChartYForWpm(pt.wpm).toFixed(1)}`)
+      .join(' ')
+  })
+
+  const areaPath = computed(() => {
+    if (h.wpmTrend.length < 2) return ''
+    const pts = h.wpmTrend
+      .map((pt, i) => `${lineChartX(i).toFixed(1)},${lineChartYForWpm(pt.wpm).toFixed(1)}`)
+      .join(' L')
+    const lastX = lineChartX(h.wpmTrend.length - 1).toFixed(1)
+    return `M0,${LC_H} L${pts} L${lastX},${LC_H} Z`
+  })
+
+  // ── Calendar ──
+  function calDayClass(count: number): string {
+    if (count === 0) return 'cal-level-0'
+    if (count === 1) return 'cal-level-1'
+    if (count <= 3) return 'cal-level-2'
+    if (count <= 6) return 'cal-level-3'
+    return 'cal-level-4'
+  }
+
+  // ── Mistake heatmap ──
+  function heatIntensity(count: number): number {
+    if (h.errorHeatmap.length === 0) return 0
+    const max = h.errorHeatmap[0].count
+    return max > 0 ? count / max : 0
+  }
+
+  function displayChar(ch: string): string {
+    if (ch === ' ') return '␣'
+    if (ch === '\n') return '↵'
+    if (ch === '\t') return '⇥'
+    return ch
+  }
+
+  // ── Export CSV ──
+  function exportCSV() {
+    const headers = [
+      'Date',
+      'File',
+      'Language',
+      'WPM',
+      'Raw WPM',
+      'CPM',
+      'Accuracy',
+      'Time',
+      'Chars',
+      'Errors',
+    ]
+    const rows = [...h.entries]
+      .reverse()
+      .map((e) => [
+        new Date(e.date).toLocaleString(),
+        `"${e.fileName.replace(/"/g, '""')}"`,
+        e.language,
+        e.wpm,
+        e.rawWpm,
+        e.cpm,
+        e.accuracy,
+        e.time,
+        e.chars,
+        e.errors,
+      ])
+    const csv = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `code-typewriter-history-${new Date().toISOString().slice(0, 10)}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 
   function confirmClear() {
     if (confirmingClear.value) {
@@ -406,9 +566,14 @@
     border-radius: 10px;
     border: 1px solid var(--border);
   }
+  .section-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
-  /* ── WPM Trend ── */
-  .trend-chart {
+  /* ── SVG Line Chart ── */
+  .chart-wrap {
     display: flex;
     gap: 8px;
     background: var(--bg-surface);
@@ -417,7 +582,7 @@
     padding: 20px 18px 12px;
     height: 200px;
   }
-  .trend-y-labels {
+  .chart-y-labels {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -426,44 +591,143 @@
     color: var(--text-faint);
     min-width: 28px;
     text-align: right;
-    padding-bottom: 20px;
+    padding-bottom: 8px;
   }
-  .trend-bars {
+  .line-chart {
     flex: 1;
-    display: flex;
-    align-items: flex-end;
-    gap: 3px;
+    height: 100%;
     border-left: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
-    padding: 0 6px 0 8px;
+    overflow: visible;
   }
-  .trend-bar-wrap {
-    flex: 1;
+  .grid-line {
+    stroke: var(--border);
+    stroke-width: 0.5;
+  }
+  .grid-line--faint {
+    stroke-dasharray: 3 3;
+    opacity: 0.5;
+  }
+  .chart-area {
+    fill: rgba(var(--accent-rgb), 0.08);
+  }
+  .chart-line {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .chart-dot {
+    fill: var(--accent);
+    transition: r 0.15s ease;
+    cursor: default;
+  }
+  .chart-dot:hover {
+    r: 5;
+  }
+  .chart-dot--latest {
+    fill: var(--green);
+    filter: drop-shadow(0 0 4px rgba(var(--green-rgb), 0.6));
+  }
+
+  /* ── Calendar Heatmap ── */
+  .calendar-wrap {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+  }
+  .calendar-grid {
+    display: flex;
+    gap: 3px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+  .cal-week {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .cal-day {
+    width: 11px;
+    height: 11px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .cal-level-0 {
+    background: var(--bg-raised);
+  }
+  .cal-level-1 {
+    background: rgba(var(--green-rgb), 0.25);
+  }
+  .cal-level-2 {
+    background: rgba(var(--green-rgb), 0.45);
+  }
+  .cal-level-3 {
+    background: rgba(var(--green-rgb), 0.7);
+  }
+  .cal-level-4 {
+    background: var(--green);
+  }
+  .cal-day--today {
+    outline: 1px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .cal-legend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 10px;
+    justify-content: flex-end;
+  }
+  .cal-legend-label {
+    font-family: var(--font-code);
+    font-size: 0.58rem;
+    color: var(--text-faint);
+  }
+  .cal-legend-cells {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+  }
+
+  /* ── Mistake Heatmap ── */
+  .heatmap-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .heatmap-cell {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-end;
-    min-width: 0;
-    height: 100%;
+    gap: 3px;
+    background: color-mix(
+      in srgb,
+      rgba(var(--red-rgb), 0.08) calc(var(--heat) * 80%),
+      var(--bg-surface)
+    );
+    border: 1px solid
+      color-mix(in srgb, rgba(var(--red-rgb), 0.4) calc(var(--heat) * 100%), var(--border));
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    min-width: 56px;
+    transition: transform 0.15s ease;
   }
-  .trend-bar {
-    width: 100%;
-    max-width: 32px;
-    min-height: 3px;
-    background: linear-gradient(180deg, var(--accent), rgba(var(--accent-rgb), 0.4));
-    border-radius: 3px 3px 0 0;
-    transition: height 0.4s var(--ease);
+  .heatmap-cell:hover {
+    transform: scale(1.06);
   }
-  .trend-bar--latest {
-    background: linear-gradient(180deg, var(--green), rgba(var(--green-rgb), 0.5));
-    box-shadow: 0 0 12px rgba(var(--green-rgb), 0.3);
-  }
-  .trend-bar-label {
+  .heatmap-char {
     font-family: var(--font-code);
-    font-size: 0.55rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .heatmap-count {
+    font-family: var(--font-code);
+    font-size: 0.6rem;
     color: var(--text-faint);
-    margin-top: 4px;
-    padding-bottom: 2px;
   }
 
   /* ── Language Cards ── */
@@ -654,7 +918,24 @@
     min-width: 55px;
   }
 
-  /* ── Clear Button ── */
+  /* ── Buttons ── */
+  .export-btn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-faint);
+    font-family: var(--font-code);
+    font-size: 0.68rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+  }
+  .export-btn:hover {
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    border-color: rgba(var(--accent-rgb), 0.25);
+  }
   .clear-btn {
     padding: 6px 14px;
     border-radius: 6px;
@@ -748,8 +1029,13 @@
       flex-wrap: wrap;
       gap: 10px;
     }
-    .trend-chart {
+    .chart-wrap {
       height: 160px;
+    }
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
     }
   }
 
@@ -759,6 +1045,13 @@
     }
     .lang-card-stats {
       grid-template-columns: repeat(2, 1fr);
+    }
+    .heatmap-wrap {
+      gap: 6px;
+    }
+    .heatmap-cell {
+      min-width: 48px;
+      padding: 8px 10px;
     }
   }
 </style>

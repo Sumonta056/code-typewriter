@@ -14,6 +14,9 @@ export const useTypingStore = defineStore('typing', () => {
   const startTime = ref<number | null>(null)
   const isComplete = ref(false)
   const isActive = ref(false)
+  const isPaused = ref(false)
+  const pausedAt = ref<number | null>(null)
+  const totalPausedMs = ref(0)
 
   const progressPercent = computed(() =>
     code.value.length > 0 ? Math.round((currentIndex.value / code.value.length) * 100) : 0,
@@ -34,6 +37,9 @@ export const useTypingStore = defineStore('typing', () => {
     startTime.value = null
     isComplete.value = false
     isActive.value = true
+    isPaused.value = false
+    pausedAt.value = null
+    totalPausedMs.value = 0
   }
 
   function advanceCorrect() {
@@ -63,6 +69,22 @@ export const useTypingStore = defineStore('typing', () => {
   function markComplete() {
     isComplete.value = true
     isActive.value = false
+    isPaused.value = false
+  }
+
+  function pause() {
+    if (!isActive.value || isPaused.value || isComplete.value) return
+    isPaused.value = true
+    pausedAt.value = Date.now()
+  }
+
+  function resume() {
+    if (!isPaused.value) return
+    if (pausedAt.value) {
+      totalPausedMs.value += Date.now() - pausedAt.value
+    }
+    pausedAt.value = null
+    isPaused.value = false
   }
 
   function reset() {
@@ -74,6 +96,9 @@ export const useTypingStore = defineStore('typing', () => {
     startTime.value = null
     isComplete.value = false
     isActive.value = true
+    isPaused.value = false
+    pausedAt.value = null
+    totalPausedMs.value = 0
   }
 
   function startTimer() {
@@ -94,6 +119,9 @@ export const useTypingStore = defineStore('typing', () => {
     startTime,
     isComplete,
     isActive,
+    isPaused,
+    pausedAt,
+    totalPausedMs,
     progressPercent,
     charCount,
     isSessionReady,
@@ -102,6 +130,8 @@ export const useTypingStore = defineStore('typing', () => {
     advanceIncorrect,
     goBack,
     markComplete,
+    pause,
+    resume,
     reset,
     startTimer,
   }

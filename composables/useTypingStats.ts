@@ -12,12 +12,21 @@ export function useTypingStats() {
   const elapsedSeconds = ref(0)
   const progress = ref(0)
 
+  // Accuracy history for live sparkline — array of [elapsed, accuracy]
+  const accuracyHistory = ref<{ t: number; v: number }[]>([])
+
   let intervalId: ReturnType<typeof setInterval> | null = null
 
-  function update() {
-    if (!store.startTime || store.isComplete) return
+  function getEffectiveElapsed(): number {
+    if (!store.startTime) return 0
+    const pausedNow = store.isPaused && store.pausedAt ? Date.now() - store.pausedAt : 0
+    return (Date.now() - store.startTime - store.totalPausedMs - pausedNow) / 1000
+  }
 
-    const elapsed = (Date.now() - store.startTime) / 1000
+  function update() {
+    if (!store.startTime || store.isComplete || store.isPaused) return
+
+    const elapsed = getEffectiveElapsed()
     const minutes = elapsed / 60
 
     wpm.value = minutes > 0 ? Math.round(store.currentIndex / 5 / minutes) : 0
@@ -34,6 +43,14 @@ export function useTypingStats() {
     const mins = Math.floor(elapsed / 60)
     const secs = Math.floor(elapsed % 60)
     elapsedFormatted.value = `${mins}:${secs.toString().padStart(2, '0')}`
+
+    // Sample accuracy history every ~1s (every 5 × 200ms ticks)
+    if (elapsed > 0 && accuracyHistory.value.length < 120) {
+      const last = accuracyHistory.value[accuracyHistory.value.length - 1]
+      if (!last || elapsed - last.t >= 1) {
+        accuracyHistory.value.push({ t: Math.round(elapsed), v: accuracy.value })
+      }
+    }
   }
 
   function startTimer() {
@@ -50,7 +67,7 @@ export function useTypingStats() {
 
   function computeFinalStats() {
     if (!store.startTime) return
-    const elapsed = (Date.now() - store.startTime) / 1000
+    const elapsed = getEffectiveElapsed()
     const minutes = elapsed / 60
     wpm.value = minutes > 0 ? Math.round(store.charCount / 5 / minutes) : 0
     rawWpm.value = minutes > 0 ? Math.round(store.totalKeystrokes / 5 / minutes) : 0
@@ -75,6 +92,7 @@ export function useTypingStats() {
     elapsedFormatted.value = '0:00'
     elapsedSeconds.value = 0
     progress.value = 0
+    accuracyHistory.value = []
   }
 
   onScopeDispose(() => {
@@ -89,6 +107,7 @@ export function useTypingStats() {
     elapsedFormatted,
     elapsedSeconds,
     progress,
+    accuracyHistory,
     startTimer,
     stopTimer,
     computeFinalStats,

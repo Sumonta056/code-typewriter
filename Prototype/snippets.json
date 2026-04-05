@@ -53,6 +53,195 @@
           "url": "https://raw.githubusercontent.com/nuxt/nuxt/main/packages/nuxt/src/app/composables/state.ts"
         }
       ]
+    },
+    {
+      "id": "typescript",
+      "name": "TypeScript",
+      "extension": ".ts",
+      "files": [
+        {
+          "name": "TS Compiler - utilities",
+          "url": "https://raw.githubusercontent.com/microsoft/TypeScript/main/src/compiler/utilities.ts"
+        },
+        {
+          "name": "TS Compiler - types",
+          "url": "https://raw.githubusercontent.com/microsoft/TypeScript/main/src/compiler/types.ts"
+        },
+        {
+          "name": "TS Core - diagnostics",
+          "url": "https://raw.githubusercontent.com/microsoft/TypeScript/main/src/compiler/diagnosticMessages.json"
+        },
+        {
+          "name": "TS Compiler - binder",
+          "url": "https://raw.githubusercontent.com/microsoft/TypeScript/main/src/compiler/binder.ts"
+        },
+        {
+          "name": "TS Services - completions",
+          "url": "https://raw.githubusercontent.com/microsoft/TypeScript/main/src/services/completions.ts"
+        }
+      ]
+    },
+    {
+      "id": "react",
+      "name": "React",
+      "extension": ".js",
+      "files": [
+        {
+          "name": "React JSX Element",
+          "url": "https://raw.githubusercontent.com/facebook/react/main/packages/react/src/jsx/ReactJSXElement.js"
+        },
+        {
+          "name": "React Reconciler",
+          "url": "https://raw.githubusercontent.com/facebook/react/main/packages/react-reconciler/src/ReactFiber.js"
+        },
+        {
+          "name": "React DOM Events",
+          "url": "https://raw.githubusercontent.com/facebook/react/main/packages/react-dom-bindings/src/events/DOMEventProperties.js"
+        },
+        {
+          "name": "React Hooks",
+          "url": "https://raw.githubusercontent.com/facebook/react/main/packages/react-reconciler/src/ReactFiberHooks.js"
+        },
+        {
+          "name": "React DOM Client",
+          "url": "https://raw.githubusercontent.com/facebook/react/main/packages/react-dom/src/ReactDOMSharedInternals.js"
+        }
+      ]
+    },
+    {
+      "id": "python",
+      "name": "Python",
+      "extension": ".py",
+      "files": [
+        {
+          "name": "Python functools",
+          "url": "https://raw.githubusercontent.com/python/cpython/main/Lib/functools.py"
+        },
+        {
+          "name": "Python itertools",
+          "url": "https://raw.githubusercontent.com/python/cpython/main/Lib/itertools.pyi"
+        },
+        {
+          "name": "Python pathlib",
+          "url": "https://raw.githubusercontent.com/python/cpython/main/Lib/pathlib/_local.py"
+        },
+        {
+          "name": "Python dataclasses",
+          "url": "https://raw.githubusercontent.com/python/cpython/main/Lib/dataclasses.py"
+        },
+        {
+          "name": "Python asyncio base",
+          "url": "https://raw.githubusercontent.com/python/cpython/main/Lib/asyncio/base_events.py"
+        }
+      ]
+    },
+    {
+      "id": "go",
+      "name": "Go",
+      "extension": ".go",
+      "files": [
+        {
+          "name": "Go strings package",
+          "url": "https://raw.githubusercontent.com/golang/go/master/src/strings/strings.go"
+        },
+        {
+          "name": "Go fmt print",
+          "url": "https://raw.githubusercontent.com/golang/go/master/src/fmt/print.go"
+        },
+        {
+          "name": "Go sync - mutex",
+          "url": "https://raw.githubusercontent.com/golang/go/master/src/sync/mutex.go"
+        },
+        {
+          "name": "Go sort package",
+          "url": "https://raw.githubusercontent.com/golang/go/master/src/sort/sort.go"
+        },
+        {
+          "name": "Go context package",
+          "url": "https://raw.githubusercontent.com/golang/go/master/src/context/context.go"
+        }
+      ]
+    },
+    {
+      "id": "rust",
+      "name": "Rust",
+      "extension": ".rs",
+      "files": [
+        {
+          "name": "Rust - HashMap",
+          "url": "https://raw.githubusercontent.com/rust-lang/rust/master/library/std/src/collections/hash/map.rs"
+        },
+        {
+          "name": "Rust - Vec impl",
+          "url": "https://raw.githubusercontent.com/rust-lang/rust/master/library/alloc/src/vec/mod.rs"
+        },
+        {
+          "name": "Rust - Iterator trait",
+          "url": "https://raw.githubusercontent.com/rust-lang/rust/master/library/core/src/iter/traits/iterator.rs"
+        },
+        {
+          "name": "Rust - Option impl",
+          "url": "https://raw.githubusercontent.com/rust-lang/rust/master/library/core/src/option.rs"
+        },
+        {
+          "name": "Rust - String impl",
+          "url": "https://raw.githubusercontent.com/rust-lang/rust/master/library/alloc/src/string.rs"
+        }
+      ]
+    },
+    {
+      "id": "java",
+      "name": "Java",
+      "extension": ".java",
+      "files": [
+        {
+          "name": "Guava - ImmutableList",
+          "url": "https://raw.githubusercontent.com/google/guava/master/guava/src/com/google/common/collect/ImmutableList.java"
+        },
+        {
+          "name": "Guava - Optional",
+          "url": "https://raw.githubusercontent.com/google/guava/master/guava/src/com/google/common/base/Optional.java"
+        },
+        {
+          "name": "Guava - Preconditions",
+          "url": "https://raw.githubusercontent.com/google/guava/master/guava/src/com/google/common/base/Preconditions.java"
+        },
+        {
+          "name": "Guava - Strings",
+          "url": "https://raw.githubusercontent.com/google/guava/master/guava/src/com/google/common/base/Strings.java"
+        },
+        {
+          "name": "Guava - CharMatcher",
+          "url": "https://raw.githubusercontent.com/google/guava/master/guava/src/com/google/common/base/CharMatcher.java"
+        }
+      ]
+    },
+    {
+      "id": "springboot",
+      "name": "Spring Boot",
+      "extension": ".java",
+      "files": [
+        {
+          "name": "SpringApplication",
+          "url": "https://raw.githubusercontent.com/spring-projects/spring-boot/main/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/SpringApplication.java"
+        },
+        {
+          "name": "AutoConfigurationImportSelector",
+          "url": "https://raw.githubusercontent.com/spring-projects/spring-boot/main/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/AutoConfigurationImportSelector.java"
+        },
+        {
+          "name": "SpringBootApplication",
+          "url": "https://raw.githubusercontent.com/spring-projects/spring-boot/main/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/SpringBootApplication.java"
+        },
+        {
+          "name": "DataSourceAutoConfiguration",
+          "url": "https://raw.githubusercontent.com/spring-projects/spring-boot/main/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jdbc/DataSourceAutoConfiguration.java"
+        },
+        {
+          "name": "WebMvcAutoConfiguration",
+          "url": "https://raw.githubusercontent.com/spring-projects/spring-boot/main/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration.java"
+        }
+      ]
     }
   ]
 }

@@ -22,6 +22,7 @@
             :chars="chars"
             :errors="errors"
             :file-name="fileName"
+            :is-new-p-b="isNewPB"
             @retry="$emit('retry')"
             @new-file="$emit('newFile')"
           />
@@ -42,6 +43,7 @@
     chars: number
     errors: number
     fileName: string
+    isNewPB?: boolean
   }>()
 
   const emit = defineEmits<{

@@ -86,6 +86,62 @@ export const useHistoryStore = defineStore('history', () => {
       .sort((a, b) => b.sessions - a.sessions)
   })
 
+  // Calendar heatmap: last 52 weeks of daily session counts
+  const calendarData = computed(() => {
+    const today = new Date()
+    today.setHours(23, 59, 59, 999)
+    // Build a map of date → count
+    const dayMap = new Map<string, number>()
+    for (const e of entries.value) {
+      const d = e.date.slice(0, 10)
+      dayMap.set(d, (dayMap.get(d) || 0) + 1)
+    }
+
+    // Generate 52 weeks (364 days) + partial current week
+    // Start from Monday 53 weeks ago
+    const msPerDay = 86400000
+    const todayMs = today.getTime()
+    // Find the Monday of the current week
+    const dayOfWeek = (today.getDay() + 6) % 7 // 0=Mon, 6=Sun
+    const thisMonday = new Date(todayMs - dayOfWeek * msPerDay)
+    thisMonday.setHours(0, 0, 0, 0)
+    const startMs = thisMonday.getTime() - 51 * 7 * msPerDay
+
+    const weeks: { date: string; count: number; isToday: boolean }[][] = []
+    const todayStr = today.toISOString().slice(0, 10)
+
+    for (let w = 0; w < 52; w++) {
+      const week: { date: string; count: number; isToday: boolean }[] = []
+      for (let d = 0; d < 7; d++) {
+        const ms = startMs + (w * 7 + d) * msPerDay
+        const dateStr = new Date(ms).toISOString().slice(0, 10)
+        week.push({
+          date: dateStr,
+          count: dayMap.get(dateStr) || 0,
+          isToday: dateStr === todayStr,
+        })
+      }
+      weeks.push(week)
+    }
+
+    return weeks
+  })
+
+  // Aggregate error heatmap across all sessions
+  const errorHeatmap = computed(() => {
+    const map = new Map<string, number>()
+    for (const e of entries.value) {
+      if (!e.errorMap) continue
+      for (const [ch, count] of Object.entries(e.errorMap)) {
+        map.set(ch, (map.get(ch) || 0) + count)
+      }
+    }
+    return [...map.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 15)
+      .map(([char, count]) => ({ char, count }))
+  })
+
   const currentStreak = computed(() => {
     if (entries.value.length === 0) return 0
     const days = getUniqueDays()
@@ -180,6 +236,8 @@ export const useHistoryStore = defineStore('history', () => {
     recentEntries,
     wpmTrend,
     languageStats,
+    calendarData,
+    errorHeatmap,
     currentStreak,
     longestStreak,
     addEntry,
