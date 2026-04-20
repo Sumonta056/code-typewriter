@@ -1,5 +1,5 @@
 <template>
-  <div class="language-selector" role="radiogroup" aria-label="Select language">
+  <div class="flex flex-wrap gap-1" role="radiogroup" aria-label="Select language">
     <button
       v-for="lang in languages"
       :key="lang.id"

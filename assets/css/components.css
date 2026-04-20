@@ -10,10 +10,6 @@
    LAYOUT — default.vue
    ═══════════════════════════════════════ */
 
-.app-layout {
-  min-height: 100vh;
-}
-
 .app {
   max-width: 1440px;
   margin: 0 auto;
@@ -21,12 +17,6 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-}
-
-.app-nav {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 16px;
 }
 
 .nav-link {
@@ -74,12 +64,6 @@
 /* ═══════════════════════════════════════
    APP — AppLogo
    ═══════════════════════════════════════ */
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
 
 .logo-terminal {
   display: flex;
@@ -236,11 +220,6 @@
    TOOLBAR — LanguageSelector
    ═══════════════════════════════════════ */
 
-.language-selector {
-  display: flex;
-  gap: 4px;
-}
-
 .lang-btn {
   padding: 7px 16px;
   border-radius: 6px;
@@ -266,28 +245,9 @@
   border-color: rgba(var(--accent-rgb), 0.3);
 }
 
-@media (max-width: 480px) {
-  .language-selector {
-    flex-wrap: wrap;
-  }
-}
-
 /* ═══════════════════════════════════════
    TOOLBAR — ToolbarActions
    ═══════════════════════════════════════ */
-
-.toolbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.toolbar-separator {
-  width: 1px;
-  height: 24px;
-  background: var(--border);
-  margin: 0 4px;
-}
 
 .pause-btn--paused svg {
   color: var(--accent);

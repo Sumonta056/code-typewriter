@@ -1,5 +1,5 @@
 <template>
-  <div class="toolbar-actions">
+  <div class="flex items-center gap-2">
     <UiIconButton :is-active="urlOpen" title="Load from GitHub URL" @click="$emit('toggleUrl')">
       <svg
         width="18"
@@ -59,7 +59,7 @@
       </svg>
     </UiIconButton>
 
-    <div class="toolbar-separator" />
+    <div class="w-px h-6 bg-c-border mx-1" />
     <UiBaseButton variant="glow" @click="$emit('random')">
       <svg
         width="16"

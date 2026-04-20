@@ -1,5 +1,5 @@
 <template>
-  <div class="logo">
+  <div class="flex items-center gap-3">
     <div class="logo-terminal">
       <span class="terminal-dot red" />
       <span class="terminal-dot yellow" />
