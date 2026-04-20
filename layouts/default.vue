@@ -1,6 +1,6 @@
+<!-- eslint-disable vue/first-attribute-linebreak -->
 <template>
   <div class="min-h-screen">
-    <AppScanlines />
     <OverlayIntroOverlay />
     <div class="app">
       <nav class="app-nav">
@@ -9,7 +9,7 @@
           <NuxtLink to="/profile" class="nav-link" active-class="active"> Profile </NuxtLink>
           <NuxtLink to="/about" class="nav-link" active-class="active"> About </NuxtLink>
           <a
-            href="https://buymeacoffee.com"
+            href="https://forms.gle/S1FJaEpzGcnMQbm77"
             target="_blank"
             rel="noopener noreferrer"
             class="nav-link nav-donate"

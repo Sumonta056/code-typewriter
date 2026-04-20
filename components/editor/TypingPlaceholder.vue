@@ -1,7 +1,7 @@
 <template>
   <div class="typing-placeholder">
     <div class="placeholder-hero">
-      <div class="placeholder-hero-icon">⌨</div>
+      <div class="placeholder-prompt"><span class="prompt-caret">$</span> code-typewriter</div>
       <h2 class="placeholder-title">Level up your coding speed</h2>
       <p class="placeholder-desc">
         Type through real source files — build muscle memory for the syntax you use every day
@@ -9,23 +9,23 @@
     </div>
 
     <div class="placeholder-steps">
-      <div class="placeholder-step">
-        <span class="placeholder-step-num">1</span>
+      <div class="placeholder-step placeholder-step--1">
+        <span class="placeholder-step-num">01</span>
         <div class="placeholder-step-body">
-          <span class="placeholder-step-pointer" aria-hidden="true" />
-          <span>
+          <div class="placeholder-step-title">Pick a Language</div>
+          <div class="placeholder-step-desc">
             Choose a <strong>language</strong> from the sidebar, then press <kbd>Start</kbd> to load
-            a random file
-          </span>
+            a random real file from GitHub
+          </div>
         </div>
       </div>
 
-      <div class="placeholder-step">
-        <span class="placeholder-step-num">2</span>
+      <div class="placeholder-step placeholder-step--2">
+        <span class="placeholder-step-num">02</span>
         <div class="placeholder-step-body">
-          <span class="placeholder-step-pointer" aria-hidden="true" />
-          <span>
-            Want to type your own code? Click the
+          <div class="placeholder-step-title">Use Your Own File</div>
+          <div class="placeholder-step-desc">
+            Click the
             <span class="placeholder-inline-btn" title="GitHub URL button">
               <svg
                 width="13"
@@ -41,16 +41,17 @@
                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
               </svg>
             </span>
-            <strong>GitHub URL</strong> button and paste any public file link
-          </span>
+            <strong>URL</strong> button and paste any public GitHub file link
+          </div>
         </div>
       </div>
 
-      <div class="placeholder-step">
-        <span class="placeholder-step-num">3</span>
+      <div class="placeholder-step placeholder-step--3">
+        <span class="placeholder-step-num">03</span>
         <div class="placeholder-step-body">
-          <span>
-            Prefer a different look? Click the
+          <div class="placeholder-step-title">Customize</div>
+          <div class="placeholder-step-desc">
+            Click the
             <span class="placeholder-inline-btn" title="Settings button">
               <svg
                 width="13"
@@ -68,8 +69,8 @@
                 />
               </svg>
             </span>
-            <strong>Settings</strong> button to change font, theme &amp; colors
-          </span>
+            <strong>Settings</strong> to change theme, font size &amp; line count
+          </div>
         </div>
       </div>
     </div>

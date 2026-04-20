@@ -78,11 +78,7 @@ export function useGithubFetcher() {
         code = lines.slice(0, maxLines).join('\n')
       }
 
-      code = code
-        .split('\n')
-        .map((l) => l.trimEnd())
-        .join('\n')
-        .trimEnd()
+      code = code.trimEnd()
 
       if (!code) throw new Error('File is empty')
 

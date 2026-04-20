@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/first-attribute-linebreak -->
 <template>
   <Teleport to="body">
     <Transition name="fade">
@@ -41,7 +42,7 @@
             <!-- Footer -->
             <div class="intro-footer">
               <a
-                href="https://ko-fi.com"
+                href="https://forms.gle/S1FJaEpzGcnMQbm77"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="donate-link"
@@ -68,7 +69,6 @@
 
 <script setup lang="ts">
   const STORAGE_KEY = 'code-typewriter-intro-seen'
-
   const visible = ref(false)
 
   onMounted(() => {

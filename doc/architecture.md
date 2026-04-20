@@ -13,10 +13,9 @@ A client-side-only typing practice app (Nuxt 3 SPA, `ssr: false`). The user pick
 ## 2. Directory layout
 
 | Directory          | Purpose                                                                                                                        |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------ | --- | ------------- | --------------------------------------------------------------------------------------------------------- |
 | `pages/`           | Route-level components. Thin — all logic lives in the matching page composable.                                                |
-| `layouts/`         | `default.vue` wraps every page with nav + overlays.                                                                            |
-| `components/`      | UI. Grouped by domain: `app/`, `editor/`, `overlay/`, `panels/`, `results/`, `stats/`, `toolbar/`, `ui/`.                      |
+| `layouts/`         | `default.vue` wraps every page with nav + overlays.                                                                            |     | `components/` | UI. Grouped by domain: `app/`, `editor/`, `overlay/`, `panels/`, `results/`, `stats/`, `toolbar/`, `ui/`. |
 | `composables/`     | Reusable reactive logic. One purpose per file. May import stores and utils.                                                    |
 | `stores/`          | Pinia stores (setup style). Hold ephemeral or persisted state + the mutations that change it. No heavy analytics.              |
 | `utils/`           | Pure functions and static data. No Vue imports, no reactivity. Cheaply unit-testable.                                          |
@@ -63,13 +62,14 @@ Session complete
 
 All stores are Pinia setup-style. Keep persistence + state here. Heavy derivations belong in `utils/` or composables.
 
-| Store          | Persisted?   | What it owns                                                                                                |
-| -------------- | ------------ | ----------------------------------------------------------------------------------------------------------- |
-| `typing.ts`    | no           | Active session: `code`, `tokens`, `charStates`, `currentIndex`, `startTime`, `isActive`, pause/resume state |
-| `settings.ts`  | yes          | `fontSize`, `tabSize`, `maxLines`, `lineNumbers`, `smoothCaret`, `theme`                                    |
-| `history.ts`   | yes          | `entries: HistoryEntry[]`; computed refs delegate to pure functions in `utils/historyAnalytics.ts`          |
-| `snippets.ts`  | no (fetched) | `languages`, `selectedLanguageId`; loads `public/snippets.json`                                             |
-| `bookmarks.ts` | yes          | `bookmarks: BookmarkedFile[]`                                                                               |
+| Store          | Persisted?   | What it owns                                                                                                                                                                           |
+| -------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `typing.ts`    | no           | Active session: `code`, `tokens`, `charStates`, `currentIndex`, `startTime`, `isActive`, pause/resume state                                                                            |
+| `settings.ts`  | yes          | `fontSize`, `tabSize`, `maxLines`, `lineNumbers`, `smoothCaret`, `theme`                                                                                                               |
+| `history.ts`   | yes          | `entries: HistoryEntry[]`; exposes computed refs (`averageWpm`, `bestWpm`, `wpmTrend`, `calendarData`, `errorHeatmap`, etc.) that call pure functions from `utils/historyAnalytics.ts` |
+| `snippets.ts`  | no (fetched) | `languages`, `selectedLanguageId`; loads `public/snippets.json`                                                                                                                        |
+| `bookmarks.ts` | yes          | `bookmarks: BookmarkedFile[]`                                                                                                                                                          |
+| `liveStats.ts` | no           | Thin data bucket: `wpm`, `accuracy`, `elapsed`, `progress`. Written by `useTypingStats` every 200 ms. Read by nav/component consumers. No math lives here.                             |
 
 ---
 
@@ -87,7 +87,17 @@ All stores are Pinia setup-style. Keep persistence + state here. Heavy derivatio
 
 ---
 
-## 6. Utils
+## 6. Pages
+
+| Page          | Role                                                                                                                                                                               |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index.vue`   | Main practice page. Thin shell — delegates entirely to `useIndexPage`. Renders editor, sidebar, URL/settings panels, results overlay.                                              |
+| `profile.vue` | Analytics dashboard. Displays WPM trend, calendar heatmap, language breakdown, mistake heatmap, lifetime numbers, recent sessions list, and CSV export. Reads from `historyStore`. |
+| `about.vue`   | Static informational page. Explains the app, how it works, privacy model, and donation link. No store access.                                                                      |
+
+---
+
+## 7. Utils
 
 | File                    | Contents                                                                           |
 | ----------------------- | ---------------------------------------------------------------------------------- |
@@ -101,7 +111,7 @@ Utils must stay pure: no Vue imports, no reactivity, no I/O beyond parameters in
 
 ---
 
-## 7. Performance-critical paths
+## 8. Performance-critical paths
 
 Edits to these require justification and a typing-session smoke test:
 
@@ -112,7 +122,7 @@ Edits to these require justification and a typing-session smoke test:
 
 ---
 
-## 8. Styling
+## 9. Styling
 
 - CSS custom properties in `variables.css` are the source of truth for every color.
 - Three themes live as entries in `utils/themes.ts` → `THEME_VARS`. Theme switch writes the properties onto `document.documentElement`.
@@ -123,7 +133,7 @@ Edits to these require justification and a typing-session smoke test:
 
 ---
 
-## 9. Extension points
+## 10. Extension points
 
 **Add a language or file** — edit `Prototype/snippets.json`. The `sync:snippets` script copies it into `public/` automatically via `predev`/`prebuild`.
 
@@ -137,7 +147,7 @@ Edits to these require justification and a typing-session smoke test:
 
 ---
 
-## 10. Coding conventions
+## 11. Coding conventions
 
 - `<script setup lang="ts">` only; no Options API.
 - Pinia stores use the setup function form.
