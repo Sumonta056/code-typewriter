@@ -30,8 +30,6 @@ Session done → save to historyStore → show ResultsOverlay
 
 ```bash
 npm run dev           # Dev server (auto-syncs snippets, localhost:3000)
-npm run build         # Production build (auto-syncs snippets)
-npm run sync:snippets # Manual: copy Prototype/snippets.json → public/
 npm run lint          # ESLint check
 npm run lint:fix      # ESLint auto-fix
 npm run format        # Prettier write

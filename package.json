@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "sync:snippets": "cp Prototype/snippets.json public/snippets.json",
-    "build": "npm run sync:snippets && nuxt build",
+    "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "npm run sync:snippets && nuxt generate",
     "preview": "nuxt preview",
