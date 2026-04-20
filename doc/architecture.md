@@ -12,19 +12,19 @@ A client-side-only typing practice app (Nuxt 3 SPA, `ssr: false`). The user pick
 
 ## 2. Directory layout
 
-| Directory          | Purpose                                                                                                                        |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------ | --- | ------------- | --------------------------------------------------------------------------------------------------------- |
-| `pages/`           | Route-level components. Thin — all logic lives in the matching page composable.                                                |
-| `layouts/`         | `default.vue` wraps every page with nav + overlays.                                                                            |     | `components/` | UI. Grouped by domain: `app/`, `editor/`, `overlay/`, `panels/`, `results/`, `stats/`, `toolbar/`, `ui/`. |
-| `composables/`     | Reusable reactive logic. One purpose per file. May import stores and utils.                                                    |
-| `stores/`          | Pinia stores (setup style). Hold ephemeral or persisted state + the mutations that change it. No heavy analytics.              |
-| `utils/`           | Pure functions and static data. No Vue imports, no reactivity. Cheaply unit-testable.                                          |
-| `utils/tokenizer/` | Syntax tokenizer. `keywords.ts` (word sets) + `tokenize.ts` (scanner) + `index.ts` (re-export).                                |
-| `types/`           | TypeScript interfaces and unions. Re-exported from `types/index.ts`.                                                           |
-| `assets/css/`      | `variables.css` (CSS custom properties + themes), `base.css` (resets), `transitions.css`, `components.css` (component styles). |
-| `plugins/`         | Nuxt plugins. `client-init.plugin.ts` hydrates stores from localStorage on mount.                                              |
-| `Prototype/`       | Legacy HTML/JS prototype + the authoritative `snippets.json`. Do not edit `public/snippets.json` directly.                     |
-| `public/`          | Static assets. `snippets.json` is auto-copied from `Prototype/` by the `sync:snippets` script.                                 |
+| Directory                   | Purpose                                                                                                                                                                                         |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ------------- | --------------------------------------------------------------------------------------------------------- |
+| `pages/`                    | Route-level components. Thin — all logic lives in the matching page composable.                                                                                                                 |
+| `layouts/`                  | `default.vue` wraps every page with nav + overlays.                                                                                                                                             |     | `components/` | UI. Grouped by domain: `app/`, `editor/`, `overlay/`, `panels/`, `results/`, `stats/`, `toolbar/`, `ui/`. |
+| `composables/`              | Reusable reactive logic. One purpose per file. May import stores and utils.                                                                                                                     |
+| `stores/`                   | Pinia stores (setup style). Hold ephemeral or persisted state + the mutations that change it. No heavy analytics.                                                                               |
+| `utils/`                    | Pure functions and static data. No Vue imports, no reactivity. Cheaply unit-testable.                                                                                                           |
+| `utils/shikiHighlighter.ts` | Shiki-based syntax highlighter. `tokenizeCode(code, url, theme)` returns a `string[]` of hex color codes (one per character). Lazily loads languages and themes into a singleton `Highlighter`. |
+| `types/`                    | TypeScript interfaces and unions. Re-exported from `types/index.ts`.                                                                                                                            |
+| `assets/css/`               | `variables.css` (CSS custom properties + themes), `base.css` (resets), `transitions.css`, `components.css` (component styles).                                                                  |
+| `plugins/`                  | Nuxt plugins. `client-init.plugin.ts` hydrates stores from localStorage on mount.                                                                                                               |
+| `Prototype/`                | Legacy HTML/JS prototype + the authoritative `snippets.json`. Do not edit `public/snippets.json` directly.                                                                                      |
+| `public/`                   | Static assets. `snippets.json` is auto-copied from `Prototype/` by the `sync:snippets` script.                                                                                                  |
 
 ---
 
@@ -35,7 +35,7 @@ User picks language
   → snippetsStore.getRandomFile()
   → engine.loadCode(url, name)
     ├─ useGithubFetcher.fetchCode() → raw source
-    ├─ utils/tokenizer.tokenize()   → TokenType[] (one per char)
+    ├─ utils/shikiHighlighter.tokenizeCode(code, url, theme) → string[] (hex color per char)
     └─ typingStore.setupSession()   → code, tokens, charStates (all pending)
 
 User types
@@ -75,15 +75,15 @@ All stores are Pinia setup-style. Keep persistence + state here. Heavy derivatio
 
 ## 5. Composables
 
-| Composable           | Role                                                                                      |
-| -------------------- | ----------------------------------------------------------------------------------------- |
-| `useIndexPage`       | Orchestrator for `pages/index.vue`. Owns page handlers, template refs, and lifecycle.     |
-| `useTypingEngine`    | Session orchestrator. Wires stores + stats + tokenizer + fetcher. Used by `useIndexPage`. |
-| `useTypingStats`     | Live WPM / accuracy / CPM loop. Polls every `STATS_UPDATE_INTERVAL_MS`.                   |
-| `useGithubFetcher`   | Parses GitHub URLs, fetches raw content, truncates to `maxLines`.                         |
-| `useTokenizer`       | Thin wrapper returning `tokenize` from `utils/tokenizer`.                                 |
-| `useKeyboardHandler` | Normalizes Tab→spaces, Enter→`\n`, Backspace→action; ignores Meta/Alt/Ctrl.               |
-| `useScrollTracker`   | Keeps the current character visible via rAF-scheduled `scrollTo`.                         |
+| Composable         | Role                                                                                      |
+| ------------------ | ----------------------------------------------------------------------------------------- |
+| `useIndexPage`     | Orchestrator for `pages/index.vue`. Owns page handlers, template refs, and lifecycle.     |
+| `useTypingEngine`  | Session orchestrator. Wires stores + stats + tokenizer + fetcher. Used by `useIndexPage`. |
+| `useTypingStats`   | Live WPM / accuracy / CPM loop. Polls every `STATS_UPDATE_INTERVAL_MS`.                   |
+| `useGithubFetcher` | Parses GitHub URLs, fetches raw content, truncates to `maxLines`.                         |
+
+| `useKeyboardHandler` | Normalizes Tab→spaces, Enter→`\n`, Backspace→action; ignores Meta/Alt/Ctrl. |
+| `useScrollTracker` | Keeps the current character visible via rAF-scheduled `scrollTo`. |
 
 ---
 
@@ -99,13 +99,12 @@ All stores are Pinia setup-style. Keep persistence + state here. Heavy derivatio
 
 ## 7. Utils
 
-| File                    | Contents                                                                           |
-| ----------------------- | ---------------------------------------------------------------------------------- |
-| `constants.ts`          | Timing, window, scroll margin, history limits. No magic numbers elsewhere.         |
-| `themes.ts`             | `THEME_VARS` CSS property tables, `THEME_KEYS`, `THEME_OPTIONS`.                   |
-| `historyAnalytics.ts`   | Pure analytics over `HistoryEntry[]`: averages, trend, calendar, heatmap, streaks. |
-| `tokenizer/keywords.ts` | `KEYWORDS`, `CONTROL`, `BUILTINS`, `IMPORT_KEYWORDS`, literal sets, char strings.  |
-| `tokenizer/tokenize.ts` | Pure `tokenize(code)` → `TokenType[]`; per-token scanners.                         |
+| File                  | Contents                                                                                                                                    |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `constants.ts`        | Timing, window, scroll margin, history limits. No magic numbers elsewhere.                                                                  |
+| `themes.ts`           | `THEME_VARS` CSS property tables, `THEME_KEYS`, `THEME_OPTIONS`.                                                                            |
+| `historyAnalytics.ts` | Pure analytics over `HistoryEntry[]`: averages, trend, calendar, heatmap, streaks.                                                          |
+| `shikiHighlighter.ts` | Shiki singleton; `tokenizeCode(code, url, theme) → string[]`; `getLangFromUrl(url) → string`; `SHIKI_THEMES` export for the theme selector. |
 
 Utils must stay pure: no Vue imports, no reactivity, no I/O beyond parameters in / value out.
 
@@ -116,7 +115,7 @@ Utils must stay pure: no Vue imports, no reactivity, no I/O beyond parameters in
 Edits to these require justification and a typing-session smoke test:
 
 - `components/editor/CodeDisplay.vue` — renders one `<span>` per character. Uses `v-memo` + stable `:key` so only changed characters re-render. Never touch the render loop without measuring.
-- `utils/tokenizer/tokenize.ts` — runs once per file load. Tokenizing a 50 k-char file should stay under ~50 ms.
+- `utils/shikiHighlighter.ts` — runs once per file load (async). Languages and themes are lazily loaded into a singleton `Highlighter`; subsequent calls for the same lang/theme are fast. Keep the hot path under ~100 ms.
 - `stores/typing.ts` — the keystroke write path. Uses `shallowRef` + `triggerRef` where appropriate. Do not wrap `charStates`/`tokens` in deep reactivity.
 - `composables/useTypingStats.ts` — the only recurring timer. Must clean up via `onScopeDispose`. Do not raise its frequency above 200 ms.
 
@@ -152,7 +151,7 @@ Edits to these require justification and a typing-session smoke test:
 - `<script setup lang="ts">` only; no Options API.
 - Pinia stores use the setup function form.
 - No external UI libraries. Tailwind is the only CSS framework.
-- No syntax highlighting libraries — the custom tokenizer is authoritative.
+- `shiki` is the only permitted external syntax-highlighting library. Tailwind is the only CSS framework.
 - No backend; persistence is localStorage only.
 - Scoped `<style>` blocks are not used — all component CSS lives in `assets/css/components.css`.
 - Pages are thin: one orchestrator composable per page (`useIndexPage`, etc.).

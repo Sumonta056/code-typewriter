@@ -40,8 +40,8 @@ export function useTypingEngine() {
       typingStore.updateTokens(tokens)
     },
   )
-  // Track error positions per character during session
-  const sessionErrorMap = ref<Record<string, number>>({})
+  // Track error positions per character during session — plain object, never read reactively
+  let sessionErrorMap: Record<string, number> = {}
   let typingTimeout: ReturnType<typeof setTimeout> | null = null
   let resultsTimeout: ReturnType<typeof setTimeout> | null = null
 
@@ -72,7 +72,7 @@ export function useTypingEngine() {
     stats.resetStats()
     showResults.value = false
     isNewPB.value = false
-    sessionErrorMap.value = {}
+    sessionErrorMap = {}
     return true
   }
 
@@ -96,13 +96,13 @@ export function useTypingEngine() {
 
     setTypingActive()
 
-    const expected = typingStore.code[typingStore.currentIndex]
+    const expected = typingStore.code[typingStore.currentIndex] as string
     if (char === expected) {
       typingStore.advanceCorrect()
     } else {
       typingStore.advanceIncorrect()
       // Track which expected character was missed
-      sessionErrorMap.value[expected] = (sessionErrorMap.value[expected] || 0) + 1
+      sessionErrorMap[expected] = (sessionErrorMap[expected] || 0) + 1
     }
 
     if (typingStore.currentIndex >= typingStore.charCount) {
@@ -148,7 +148,7 @@ export function useTypingEngine() {
       chars: typingStore.charCount,
       errors: typingStore.totalErrors,
       date: new Date().toISOString(),
-      errorMap: { ...sessionErrorMap.value },
+      errorMap: { ...sessionErrorMap },
     })
 
     resultsTimeout = setTimeout(() => {
@@ -163,16 +163,11 @@ export function useTypingEngine() {
     stats.resetStats()
     showResults.value = false
     isNewPB.value = false
-    sessionErrorMap.value = {}
+    sessionErrorMap = {}
   }
 
   function retrySession() {
-    showResults.value = false
-    typingStore.reset()
-    stats.stopTimer()
-    stats.resetStats()
-    isNewPB.value = false
-    sessionErrorMap.value = {}
+    resetSession()
   }
 
   function cleanup() {

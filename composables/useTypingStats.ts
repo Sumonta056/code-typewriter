@@ -30,28 +30,30 @@ export function useTypingStats() {
     return (Date.now() - store.startTime - store.totalPausedMs - pausedNow) / 1000
   }
 
-  function update() {
-    if (!store.startTime || store.isComplete || store.isPaused) return
-
+  // Shared stat computation — caller must set progress.value before calling
+  function calcStats(charCount: number): void {
     const elapsed = getEffectiveElapsed()
     const minutes = elapsed / 60
-
-    wpm.value = minutes > 0 ? Math.round(store.currentIndex / 5 / minutes) : 0
+    wpm.value = minutes > 0 ? Math.round(charCount / 5 / minutes) : 0
     rawWpm.value = minutes > 0 ? Math.round(store.totalKeystrokes / 5 / minutes) : 0
-    cpm.value = minutes > 0 ? Math.round(store.currentIndex / minutes) : 0
+    cpm.value = minutes > 0 ? Math.round(charCount / minutes) : 0
     accuracy.value =
       store.totalKeystrokes > 0
         ? Math.round(((store.totalKeystrokes - store.totalErrors) / store.totalKeystrokes) * 100)
         : 100
-    progress.value =
-      store.charCount > 0 ? Math.round((store.currentIndex / store.charCount) * 100) : 0
     elapsedSeconds.value = elapsed
-
     const mins = Math.floor(elapsed / 60)
     const secs = Math.floor(elapsed % 60)
     elapsedFormatted.value = `${mins}:${secs.toString().padStart(2, '0')}`
     liveStats.set(wpm.value, accuracy.value, elapsedFormatted.value, progress.value)
+  }
 
+  function update() {
+    if (!store.startTime || store.isComplete || store.isPaused) return
+    progress.value = store.progressPercent
+    calcStats(store.currentIndex)
+
+    const elapsed = elapsedSeconds.value
     if (elapsed > 0 && accuracyHistory.value.length < MAX_ACCURACY_SAMPLES) {
       const last = accuracyHistory.value[accuracyHistory.value.length - 1]
       if (!last || elapsed - last.t >= ACCURACY_SAMPLE_INTERVAL_S) {
@@ -74,22 +76,8 @@ export function useTypingStats() {
 
   function computeFinalStats() {
     if (!store.startTime) return
-    const elapsed = getEffectiveElapsed()
-    const minutes = elapsed / 60
-    wpm.value = minutes > 0 ? Math.round(store.charCount / 5 / minutes) : 0
-    rawWpm.value = minutes > 0 ? Math.round(store.totalKeystrokes / 5 / minutes) : 0
-    cpm.value = minutes > 0 ? Math.round(store.charCount / minutes) : 0
-    accuracy.value =
-      store.totalKeystrokes > 0
-        ? Math.round(((store.totalKeystrokes - store.totalErrors) / store.totalKeystrokes) * 100)
-        : 100
     progress.value = 100
-    elapsedSeconds.value = elapsed
-
-    const mins = Math.floor(elapsed / 60)
-    const secs = Math.floor(elapsed % 60)
-    elapsedFormatted.value = `${mins}:${secs.toString().padStart(2, '0')}`
-    liveStats.set(wpm.value, accuracy.value, elapsedFormatted.value, progress.value)
+    calcStats(store.charCount)
   }
 
   function resetStats() {

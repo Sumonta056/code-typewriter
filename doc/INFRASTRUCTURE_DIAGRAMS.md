@@ -11,7 +11,7 @@
 - **One orchestrator.** `useIndexPage` is the only composable `index.vue` touches directly.
 - **One timer.** `useTypingStats` runs a 200 ms `setInterval` for all live stat updates.
 - **One write bus.** `liveStats` store is a thin bucket — only `useTypingStats` writes to it; `NavStats` reads from it.
-- **Tokenizer runs once.** After a file loads, `tokenize()` assigns a `TokenType` to every character. It never runs again mid-session.
+- **Tokenizer runs once.** After a file loads, `tokenizeCode()` in `shikiHighlighter.ts` assigns a Shiki color to every character. It never runs again mid-session (unless the theme changes).
 - **`charStates` uses `shallowRef` + `triggerRef`.** Only changed characters cause re-renders in `CodeDisplay`.
 - **Settings are reactive.** CSS variables are re-applied instantly on every change via `applyCssVariables()`.
 - **Snippets are pre-built.** `public/snippets.json` is synced from `Prototype/snippets.json` at build time.
@@ -39,7 +39,6 @@ graph TD
             UIS[useTypingStats — 200ms timer]
             UIK[useKeyboardHandler]
             UIG[useGithubFetcher]
-            UIT[useTokenizer]
             USCR[useScrollTracker]
         end
 
@@ -53,7 +52,7 @@ graph TD
         end
 
         subgraph Utils["Utils (Pure Functions)"]
-            TK[tokenizer/tokenize.ts]
+            SHK[shikiHighlighter.ts — Shiki tokenizer]
             HA[historyAnalytics.ts]
             TH[themes.ts]
             CN[constants.ts]
@@ -125,7 +124,7 @@ sequenceDiagram
     participant Snippets as snippetsStore
     participant Engine as useTypingEngine
     participant Fetcher as useGithubFetcher
-    participant Tokenizer as useTokenizer
+    participant Shiki as shikiHighlighter.ts
     participant TypingStore as typing store
     participant Stats as useTypingStats
 
@@ -148,7 +147,7 @@ sequenceDiagram
     Fetcher-->>Engine: { code, fileName }
 
     Engine->>Engine: replace \t with spaces (tabSize setting)
-    Engine->>Tokenizer: tokenize(code) → TokenType[] per character
+    Engine->>Shiki: tokenizeCode(code, url, theme) → string[] (hex color per char)
     Engine->>TypingStore: setupSession(code, tokens, fileName, url)
     TypingStore->>TypingStore: charStates = new Array(n).fill('pending')
 

@@ -141,13 +141,7 @@ export function useIndexPage() {
 
   function globalClickHandler(e: MouseEvent) {
     const target = e.target as HTMLElement
-    if (
-      target.closest('button') ||
-      target.closest('input') ||
-      target.closest('select') ||
-      target.closest('.lang-btn')
-    )
-      return
+    if (target.closest('button, input, select, .lang-btn')) return
     focusInput()
   }
 
