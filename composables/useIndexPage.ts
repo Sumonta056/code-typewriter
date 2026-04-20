@@ -1,6 +1,6 @@
 import { onMounted, onUnmounted, ref } from 'vue'
-import type HiddenInput from '~/components/ui/HiddenInput.vue'
 import type TypingContainer from '~/components/editor/TypingContainer.vue'
+import type HiddenInput from '~/components/ui/HiddenInput.vue'
 import { useKeyboardHandler } from '~/composables/useKeyboardHandler'
 import { useScrollTracker } from '~/composables/useScrollTracker'
 import { useTypingEngine } from '~/composables/useTypingEngine'
@@ -55,6 +55,11 @@ export function useIndexPage() {
   async function onLoadRandom() {
     const ok = await engine.loadRandomFile()
     if (ok) focusAndClear()
+  }
+
+  async function onLanguageSelect(id: string) {
+    snippetsStore.selectLanguage(id)
+    await onLoadRandom()
   }
 
   async function onLoadFromUrl(input: string) {
@@ -136,7 +141,13 @@ export function useIndexPage() {
 
   function globalClickHandler(e: MouseEvent) {
     const target = e.target as HTMLElement
-    if (target.closest('button') || target.closest('input') || target.closest('.lang-btn')) return
+    if (
+      target.closest('button') ||
+      target.closest('input') ||
+      target.closest('select') ||
+      target.closest('.lang-btn')
+    )
+      return
     focusInput()
   }
 
@@ -166,6 +177,7 @@ export function useIndexPage() {
     toggleSettings,
     focusInput,
     onLoadRandom,
+    onLanguageSelect,
     onLoadFromUrl,
     onLoadBookmark,
     toggleBookmark,

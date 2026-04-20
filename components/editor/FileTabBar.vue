@@ -15,26 +15,7 @@
       <span>{{ fileName }}</span>
       <span v-if="progress" class="file-tab-badge">{{ progress }}</span>
     </div>
-    <div class="file-tab-filler">
-      <Transition name="stats-fade">
-        <div v-if="statsVisible" class="tab-stats">
-          <span class="tab-stat tab-stat--wpm">
-            <span class="tab-stat-icon">⚡</span>
-            <span class="tab-stat-value">{{ wpm }}</span>
-            <span class="tab-stat-label">wpm</span>
-          </span>
-          <span class="tab-stat tab-stat--acc">
-            <span class="tab-stat-icon">◎</span>
-            <span class="tab-stat-value">{{ accuracy }}%</span>
-            <span class="tab-stat-label">acc</span>
-          </span>
-          <span class="tab-stat tab-stat--time">
-            <span class="tab-stat-icon">◷</span>
-            <span class="tab-stat-value">{{ elapsed }}</span>
-          </span>
-        </div>
-      </Transition>
-    </div>
+    <div class="file-tab-filler" />
   </div>
 </template>
 
@@ -42,9 +23,5 @@
   defineProps<{
     fileName: string
     progress?: string
-    statsVisible?: boolean
-    wpm?: number
-    accuracy?: number
-    elapsed?: string
   }>()
 </script>

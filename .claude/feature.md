@@ -1,13 +1,9 @@
-1. the website central height should be fix and everything should adjust based on that
-2. the website should be responsive and adjust to different screen sizes
-3. Increase the font little bit
-4. make sure while typing the code, the line height is good and it doesn't look cramped, it auto scroll beacuse its is a typing website, user will not manually scroll, so make sure it auto scrolls and the line height is good
+Also, the code is not rendering properly. I think it's missing some of the variables, words; sometimes it breaks; there are empty spaces. I think it's not completely able to show the exact code from the URL. Sometimes in the editor, it's breaking the code also.
 
-5. Language should be dropdown,it will save spaces
-6. In untitled first tab,
+Now I have the full picture. Three separate issues at play:
 
-- Highlight and increae large front for show how user use this website
-- make a arrow direction navigatio to (select langaugae button or github url button)
-- also tell they can change settings, fronts, themes in the setting button
+Issue 1 (CSS) — overflow-wrap: break-word breaks identifiers mid-character. A long identifier like getUserById can split as getUser / ById across two visual lines. The second fragment looks like a "missing" word or "empty space" on the new line.
 
-1. Show stats only in top tab bar in edition, and make it more visible, make it more colorful, and also add some animation to it, so that user can see the stats clearly and it will be more engaging for them, also make it bigger to easy to see
+Issue 2 (CSS) — overflow-x: hidden + overflow-y: auto on the same element. CSS spec behavior: when one axis is auto, browsers can silently change the other hidden to auto, producing an unexpected horizontal scrollbar. Using overflow-x: clip instead truly clips without creating a scroll container.
+
+Issue 3 (Fetcher) — .trimEnd() on every line strips trailing spaces, so the displayed code doesn't match the source exactly.

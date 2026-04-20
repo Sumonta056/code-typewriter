@@ -1,305 +1,149 @@
 # Architecture
 
-This document describes the structure, data flow, and component hierarchy of Code Typewriter.
+Canonical reference for the Code Typewriter codebase. Updated 2026-04-20.
 
 ---
 
-## 1. High-Level System Overview
+## 1. What this app is
 
-```mermaid
-graph TD
-    A[Browser] -->|app start| B[client-init.plugin.ts]
-    B -->|loadFromStorage| C[(localStorage)]
-    B -->|loadSnippets| D[/public/snippets.json/]
-    B --> E[Nuxt App Ready]
+A client-side-only typing practice app (Nuxt 3 SPA, `ssr: false`). The user picks a language, a real source file is fetched from GitHub, tokenized locally, and rendered character-by-character. Every keystroke is matched against the expected character and updates a live stats overlay. Everything persists to `localStorage` — there is no backend.
 
-    E --> F[pages/index.vue]
-    F -->|orchestrates| G[useTypingEngine]
-    G -->|fetch| H[GitHub API / raw.githubusercontent.com]
-    H -->|raw code string| G
-    G -->|tokenize| I[useTokenizer]
-    I -->|TokenType array| G
-    G -->|setupSession| J[(typingStore)]
+---
 
-    F -->|keydown events| K[useKeyboardHandler]
-    K -->|processChar / processBackspace| G
-    G -->|advanceCorrect / advanceIncorrect| J
-    G -->|live tick every 200ms| L[useTypingStats]
-    G -->|playKeySound| M[useAudio / Web Audio API]
-    G -->|scrollToIndex| N[useScrollTracker / rAF]
+## 2. Directory layout
 
-    J -->|charStates / currentIndex| O[EditorTypingContainer]
-    L -->|wpm / accuracy / elapsed| P[StatsLiveStats]
+| Directory          | Purpose                                                                                                                        |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| `pages/`           | Route-level components. Thin — all logic lives in the matching page composable.                                                |
+| `layouts/`         | `default.vue` wraps every page with nav + overlays.                                                                            |
+| `components/`      | UI. Grouped by domain: `app/`, `editor/`, `overlay/`, `panels/`, `results/`, `stats/`, `toolbar/`, `ui/`.                      |
+| `composables/`     | Reusable reactive logic. One purpose per file. May import stores and utils.                                                    |
+| `stores/`          | Pinia stores (setup style). Hold ephemeral or persisted state + the mutations that change it. No heavy analytics.              |
+| `utils/`           | Pure functions and static data. No Vue imports, no reactivity. Cheaply unit-testable.                                          |
+| `utils/tokenizer/` | Syntax tokenizer. `keywords.ts` (word sets) + `tokenize.ts` (scanner) + `index.ts` (re-export).                                |
+| `types/`           | TypeScript interfaces and unions. Re-exported from `types/index.ts`.                                                           |
+| `assets/css/`      | `variables.css` (CSS custom properties + themes), `base.css` (resets), `transitions.css`, `components.css` (component styles). |
+| `plugins/`         | Nuxt plugins. `client-init.plugin.ts` hydrates stores from localStorage on mount.                                              |
+| `Prototype/`       | Legacy HTML/JS prototype + the authoritative `snippets.json`. Do not edit `public/snippets.json` directly.                     |
+| `public/`          | Static assets. `snippets.json` is auto-copied from `Prototype/` by the `sync:snippets` script.                                 |
 
-    G -->|on complete| Q[historyStore]
-    Q -->|persist| C
-    G -->|showResults| R[ResultsOverlay]
+---
+
+## 3. Core data flow
+
+```
+User picks language
+  → snippetsStore.getRandomFile()
+  → engine.loadCode(url, name)
+    ├─ useGithubFetcher.fetchCode() → raw source
+    ├─ utils/tokenizer.tokenize()   → TokenType[] (one per char)
+    └─ typingStore.setupSession()   → code, tokens, charStates (all pending)
+
+User types
+  → HiddenInput @keydown
+  → useIndexPage.onKeyDown()
+    ├─ useKeyboardHandler.handleKeyDown() → normalizes Tab/Enter/Backspace
+    └─ engine.processChar(ch) | engine.processBackspace()
+       └─ typingStore.advanceCorrect | advanceIncorrect | goBack
+  → CodeDisplay re-renders (v-memo'd per char)
+
+Stats loop (every 200 ms while active)
+  → useTypingStats.update()
+  → reactive refs: wpm, rawWpm, cpm, accuracy, progress, accuracyHistory
+
+Session complete
+  → engine.completeTyping()
+  → historyStore.addEntry()  (persisted)
+  → ResultsOverlay shown after RESULTS_SHOW_DELAY_MS
 ```
 
 ---
 
-## 2. Startup Sequence
+## 4. Stores
 
-```mermaid
-sequenceDiagram
-    participant Browser
-    participant Plugin as client-init.plugin.ts
-    participant SettingsStore
-    participant HistoryStore
-    participant SnippetsStore
-    participant SnippetsJSON as /public/snippets.json
+All stores are Pinia setup-style. Keep persistence + state here. Heavy derivations belong in `utils/` or composables.
 
-    Browser->>Plugin: app mounted (client only)
-    Plugin->>SettingsStore: loadFromStorage()
-    SettingsStore-->>Browser: apply CSS variables (font size, tab size)
-    Plugin->>HistoryStore: loadFromStorage()
-    Plugin->>SnippetsStore: loadSnippets()
-    SnippetsStore->>SnippetsJSON: $fetch('/snippets.json')
-    SnippetsJSON-->>SnippetsStore: { languages: [...] }
-    SnippetsStore-->>Plugin: isLoaded = true, selectedLanguageId = languages[0].id
-```
+| Store          | Persisted?   | What it owns                                                                                                |
+| -------------- | ------------ | ----------------------------------------------------------------------------------------------------------- |
+| `typing.ts`    | no           | Active session: `code`, `tokens`, `charStates`, `currentIndex`, `startTime`, `isActive`, pause/resume state |
+| `settings.ts`  | yes          | `fontSize`, `tabSize`, `maxLines`, `lineNumbers`, `smoothCaret`, `theme`                                    |
+| `history.ts`   | yes          | `entries: HistoryEntry[]`; computed refs delegate to pure functions in `utils/historyAnalytics.ts`          |
+| `snippets.ts`  | no (fetched) | `languages`, `selectedLanguageId`; loads `public/snippets.json`                                             |
+| `bookmarks.ts` | yes          | `bookmarks: BookmarkedFile[]`                                                                               |
 
 ---
 
-## 3. Code Loading Flow
+## 5. Composables
 
-```mermaid
-sequenceDiagram
-    participant User
-    participant Page as pages/index.vue
-    participant Engine as useTypingEngine
-    participant Fetcher as useGithubFetcher
-    participant Tokenizer as useTokenizer
-    participant TypingStore
-
-    User->>Page: click Random / paste URL / select language
-    Page->>Engine: loadRandomFile() or loadCode(url, name)
-    Engine->>Fetcher: fetchCode(url, maxLines)
-    Fetcher->>Fetcher: parseGitHubUrl() → build API URL + raw URL
-    Fetcher->>GitHub: fetch (API first, raw fallback)
-    GitHub-->>Fetcher: raw code text
-    Fetcher->>Fetcher: normalize line endings, trim, slice to maxLines
-    Fetcher-->>Engine: { code, fileName }
-    Engine->>Engine: expand tabs → spaces (per tabSize setting)
-    Engine->>Tokenizer: tokenize(code)
-    Tokenizer-->>Engine: TokenType[] (per-character token array)
-    Engine->>TypingStore: setupSession(code, tokens, name, url)
-    Engine->>useTypingStats: resetStats()
-    Engine-->>Page: ok = true → focus hidden input
-```
+| Composable           | Role                                                                                      |
+| -------------------- | ----------------------------------------------------------------------------------------- |
+| `useIndexPage`       | Orchestrator for `pages/index.vue`. Owns page handlers, template refs, and lifecycle.     |
+| `useTypingEngine`    | Session orchestrator. Wires stores + stats + tokenizer + fetcher. Used by `useIndexPage`. |
+| `useTypingStats`     | Live WPM / accuracy / CPM loop. Polls every `STATS_UPDATE_INTERVAL_MS`.                   |
+| `useGithubFetcher`   | Parses GitHub URLs, fetches raw content, truncates to `maxLines`.                         |
+| `useTokenizer`       | Thin wrapper returning `tokenize` from `utils/tokenizer`.                                 |
+| `useKeyboardHandler` | Normalizes Tab→spaces, Enter→`\n`, Backspace→action; ignores Meta/Alt/Ctrl.               |
+| `useScrollTracker`   | Keeps the current character visible via rAF-scheduled `scrollTo`.                         |
 
 ---
 
-## 4. Typing Session Flow
+## 6. Utils
 
-```mermaid
-sequenceDiagram
-    participant User
-    participant HiddenInput as UiHiddenInput
-    participant KBHandler as useKeyboardHandler
-    participant Engine as useTypingEngine
-    participant TypingStore
-    participant Stats as useTypingStats
-    participant Audio as useAudio
-    participant Scroller as useScrollTracker
+| File                    | Contents                                                                           |
+| ----------------------- | ---------------------------------------------------------------------------------- |
+| `constants.ts`          | Timing, window, scroll margin, history limits. No magic numbers elsewhere.         |
+| `themes.ts`             | `THEME_VARS` CSS property tables, `THEME_KEYS`, `THEME_OPTIONS`.                   |
+| `historyAnalytics.ts`   | Pure analytics over `HistoryEntry[]`: averages, trend, calendar, heatmap, streaks. |
+| `tokenizer/keywords.ts` | `KEYWORDS`, `CONTROL`, `BUILTINS`, `IMPORT_KEYWORDS`, literal sets, char strings.  |
+| `tokenizer/tokenize.ts` | Pure `tokenize(code)` → `TokenType[]`; per-token scanners.                         |
 
-    User->>HiddenInput: keydown event
-    HiddenInput->>KBHandler: handleKeyDown(e, callbacks)
-    KBHandler->>KBHandler: filter modifier keys, map Tab→\t Enter→\n
-
-    alt Normal character
-        KBHandler->>Engine: onChar(char)
-        Engine->>TypingStore: startTimer() (first keystroke only)
-        Engine->>Stats: startTimer() → setInterval 200ms
-        Engine->>Audio: playKeySound(soundEnabled)
-        Engine->>TypingStore: advanceCorrect() or advanceIncorrect()
-        Engine->>Scroller: scrollToIndex(container, charEls, currentIndex)
-    else Backspace
-        KBHandler->>Engine: onBackspace()
-        Engine->>TypingStore: goBack()
-        Engine->>Scroller: scrollToIndex(...)
-    end
-
-    Stats-->>Page: wpm / accuracy / elapsed (reactive refs, updated every 200ms)
-    TypingStore-->>EditorTypingContainer: charStates / currentIndex (reactive)
-```
+Utils must stay pure: no Vue imports, no reactivity, no I/O beyond parameters in / value out.
 
 ---
 
-## 5. Session Completion Flow
+## 7. Performance-critical paths
 
-```mermaid
-sequenceDiagram
-    participant Engine as useTypingEngine
-    participant TypingStore
-    participant Stats as useTypingStats
-    participant HistoryStore
-    participant ResultsOverlay
+Edits to these require justification and a typing-session smoke test:
 
-    Engine->>TypingStore: markComplete()
-    Engine->>Stats: stopTimer()
-    Engine->>Stats: computeFinalStats()
-    Engine->>HistoryStore: addEntry({ wpm, accuracy, chars, errors, ... })
-    HistoryStore->>localStorage: saveToStorage()
-    Engine-->>ResultsOverlay: showResults = true (after 350ms delay)
-    ResultsOverlay-->>User: display WPM, raw WPM, CPM, accuracy, time, errors
-
-    alt Retry
-        User->>Engine: retrySession()
-        Engine->>TypingStore: reset()
-        Engine->>Stats: resetStats()
-    else New File
-        User->>Engine: loadRandomFile()
-        Note over Engine: same as Code Loading Flow
-    end
-```
+- `components/editor/CodeDisplay.vue` — renders one `<span>` per character. Uses `v-memo` + stable `:key` so only changed characters re-render. Never touch the render loop without measuring.
+- `utils/tokenizer/tokenize.ts` — runs once per file load. Tokenizing a 50 k-char file should stay under ~50 ms.
+- `stores/typing.ts` — the keystroke write path. Uses `shallowRef` + `triggerRef` where appropriate. Do not wrap `charStates`/`tokens` in deep reactivity.
+- `composables/useTypingStats.ts` — the only recurring timer. Must clean up via `onScopeDispose`. Do not raise its frequency above 200 ms.
 
 ---
 
-## 6. Component Tree
+## 8. Styling
 
-```mermaid
-graph TD
-    AV[app.vue] --> NL[NuxtLayout → layouts/default.vue]
-    NL --> NP[NuxtPage → pages/index.vue]
-
-    NP --> SB[Sidebar]
-    SB --> AL[AppLogo]
-    SB --> LS[ToolbarLanguageSelector]
-    SB --> TA[ToolbarActions]
-    SB --> ST[StatsLiveStats]
-    ST --> SBK[StatBlock]
-    ST --> SBR[StatBar]
-
-    NP --> ED[Editor Column]
-    ED --> UP[PanelsUrlPanel]
-    ED --> SP[PanelsSettingsPanel]
-    SP --> SN[SettingNumeric]
-    SP --> STG[SettingToggle]
-    ED --> FT[EditorFileTabBar]
-    ED --> EF[EditorFrame]
-    EF --> TC[EditorTypingContainer]
-    TC --> CD[EditorCodeDisplay]
-    TC --> LN[EditorLineNumbers]
-    TC --> TP[EditorTypingPlaceholder]
-    ED --> PT[EditorProgressTrack]
-
-    NP --> HI[UiHiddenInput]
-    NP --> RO[ResultsOverlay]
-    RO --> RC[ResultsCard]
-    RC --> RI[ResultItem ×N]
-
-    NP --> LO[OverlayLoadingOverlay]
-```
+- CSS custom properties in `variables.css` are the source of truth for every color.
+- Three themes live as entries in `utils/themes.ts` → `THEME_VARS`. Theme switch writes the properties onto `document.documentElement`.
+- Tailwind is configured (`tailwind.config.ts`) with the CSS variables exposed as color tokens (`bg-bg-main`, `text-c-text`, etc.) and `preflight: false`.
+- Prefer Tailwind utilities for pure layout/structural styling (`flex`, `gap`, `items-center`, spacing, simple backgrounds).
+- Keep raw CSS in `assets/css/components.css` for interactive states, animations, media queries, and anything that needs pseudo-elements.
+- Never hardcode hex colors in templates or components — always reference a CSS variable (directly or via Tailwind token).
 
 ---
 
-## 7. State & Composable Map
+## 9. Extension points
 
-```mermaid
-graph LR
-    subgraph Stores ["Pinia Stores (global state)"]
-        TS[typingStore\ncode · charStates · currentIndex\ntotalErrors · isComplete · isActive]
-        SS[settingsStore\nfontSize · tabSize · maxLines\nsound · lineNumbers · smoothCaret]
-        SN[snippetsStore\nlanguages · selectedLanguageId\ngetRandomFile]
-        HS[historyStore\nentries · averageWpm · bestWpm\nstreak · languageStats]
-    end
+**Add a language or file** — edit `Prototype/snippets.json`. The `sync:snippets` script copies it into `public/` automatically via `predev`/`prebuild`.
 
-    subgraph Composables ["Composables (logic units)"]
-        TE[useTypingEngine\norchestrator]
-        GF[useGithubFetcher\nHTTP · URL parsing]
-        TK[useTokenizer\nsyntax highlighting]
-        TStats[useTypingStats\nWPM · CPM · accuracy]
-        KB[useKeyboardHandler\nkeydown filtering]
-        AU[useAudio\nWeb Audio API]
-        SC[useScrollTracker\nrAF scroll]
-    end
+**Add a theme** — append a new key to `utils/themes.ts#THEME_VARS`, add a `THEME_OPTIONS` entry, widen the `ThemeKey` union in `types/settings.ts`, and add a matching `.theme-<key>` class in `variables.css` if present.
 
-    TE --> GF
-    TE --> TK
-    TE --> TStats
-    TE --> AU
-    TE --> TS
-    TE --> SS
-    TE --> SN
-    TE --> HS
+**Add a component** — place it under the matching domain directory. If no match, create a new group (e.g. `components/overlay/`). Keep presentation-only components in `ui/`. Export via auto-import (no manual imports needed).
 
-    Page[pages/index.vue] --> TE
-    Page --> KB
-    Page --> SC
-    Page --> TS
-    Page --> SS
-    Page --> SN
-```
+**Add a composable** — one purpose per file. Use `onScopeDispose` for cleanup. If the logic is pure, put it in `utils/` instead.
+
+**Add a magic number** — put it in `utils/constants.ts` and import from there.
 
 ---
 
-## 8. Data Types
+## 10. Coding conventions
 
-```mermaid
-classDiagram
-    class CharState {
-        <<type>>
-        'pending' | 'correct' | 'incorrect'
-    }
-
-    class TokenType {
-        <<type>>
-        plain | keyword | control | string
-        number | comment | func-call | type
-        builtin | operator | bracket | brace
-        punctuation | property | boolean | null
-        import | decorator | tag-bracket
-        tag-name | tag-attr | tag-attr-special
-    }
-
-    class Language {
-        +string id
-        +string name
-        +string extension
-        +SnippetFile[] files
-    }
-
-    class SnippetFile {
-        +string name
-        +string url
-    }
-
-    class AppSettings {
-        +number fontSize
-        +number tabSize
-        +number maxLines
-        +boolean sound
-        +boolean lineNumbers
-        +boolean smoothCaret
-    }
-
-    class HistoryEntry {
-        +string id
-        +string fileName
-        +string language
-        +number wpm
-        +number rawWpm
-        +number cpm
-        +number accuracy
-        +number elapsedSeconds
-        +string time
-        +number chars
-        +number errors
-        +string date
-    }
-
-    Language "1" --> "many" SnippetFile
-```
-
----
-
-## 9. CSS Architecture
-
-```mermaid
-graph TD
-    V[assets/css/variables.css\nDesign tokens: colors, fonts,\nspacing, radius, border] --> B
-    B[assets/css/base.css\nReset, body, scrollbars,\nglobal layout primitives] --> T
-    T[assets/css/transitions.css\nVue transition classes\nfade, slide, scale]
-    V --> SC[Scoped component styles\nAll layout & component-specific CSS\nlives inside each .vue file]
-```
+- `<script setup lang="ts">` only; no Options API.
+- Pinia stores use the setup function form.
+- No external UI libraries. Tailwind is the only CSS framework.
+- No syntax highlighting libraries — the custom tokenizer is authoritative.
+- No backend; persistence is localStorage only.
+- Scoped `<style>` blocks are not used — all component CSS lives in `assets/css/components.css`.
+- Pages are thin: one orchestrator composable per page (`useIndexPage`, etc.).
+- Stores do not compute heavy analytics — delegate to `utils/`.

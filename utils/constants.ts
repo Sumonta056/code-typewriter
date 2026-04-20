@@ -12,8 +12,8 @@ export const RECENT_ENTRIES_WINDOW = 20
 export const ERROR_HEATMAP_TOP_N = 15
 export const CALENDAR_WEEKS = 52
 
-export const SCROLL_MARGIN_TOP = 80
-export const SCROLL_MARGIN_BOTTOM = 80
+export const SCROLL_MARGIN_TOP = 60
+export const SCROLL_MARGIN_BOTTOM = 100
 export const SCROLL_MARGIN_LEFT = 80
 export const SCROLL_MARGIN_RIGHT = 40
 

@@ -21,11 +21,31 @@
 
       <div class="sb-section">
         <div class="sb-label">Language</div>
+        <p class="sb-desc">Pick the language you want to practice</p>
         <ToolbarLanguageSelector
           :languages="snippetsStore.languages"
           :selected-id="snippetsStore.selectedLanguageId"
-          @select="snippetsStore.selectLanguage"
+          @select="onLanguageSelect"
         />
+        <UiBaseButton variant="glow" :small="true" class="sb-start-btn" @click="onLoadRandom">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="16 3 21 3 21 8" />
+            <line x1="4" y1="20" x2="21" y2="3" />
+            <polyline points="21 16 21 21 16 21" />
+            <line x1="15" y1="15" x2="21" y2="21" />
+            <line x1="4" y1="4" x2="9" y2="9" />
+          </svg>
+          Start
+        </UiBaseButton>
       </div>
 
       <div class="sb-section">
@@ -38,22 +58,7 @@
           @toggle-url="toggleUrl"
           @toggle-settings="toggleSettings"
           @toggle-pause="engine.togglePause()"
-          @random="onLoadRandom"
           @reset="onReset"
-        />
-      </div>
-
-      <div class="sb-section sb-stats">
-        <StatsLiveStats
-          :visible="typingStore.isActive || typingStore.isComplete"
-          :wpm="engine.stats.wpm.value"
-          :accuracy="engine.stats.accuracy.value"
-          :elapsed="engine.stats.elapsedFormatted.value"
-          :progress="engine.stats.progress.value"
-        />
-        <StatsAccuracySparkline
-          :visible="typingStore.isActive && !typingStore.isComplete"
-          :history="engine.stats.accuracyHistory.value"
         />
       </div>
 
@@ -83,10 +88,6 @@
         <EditorFileTabBar
           :file-name="typingStore.fileName || 'untitled'"
           :progress="engine.fileProgress.value"
-          :stats-visible="typingStore.isActive || typingStore.isComplete"
-          :wpm="engine.stats.wpm.value"
-          :accuracy="engine.stats.accuracy.value"
-          :elapsed="engine.stats.elapsedFormatted.value"
         />
         <button
           v-if="typingStore.fileUrl"
@@ -161,6 +162,7 @@
     toggleSettings,
     focusInput,
     onLoadRandom,
+    onLanguageSelect,
     onLoadFromUrl,
     onLoadBookmark,
     toggleBookmark,

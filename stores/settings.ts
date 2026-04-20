@@ -3,20 +3,21 @@ import type { AppSettings, BooleanSettingKey, NumericSettingKey, ThemeKey } from
 import { THEME_KEYS, THEME_VARS } from '~/utils/themes'
 
 const STORAGE_KEY = 'codeTypeSettings'
+const SETTINGS_VERSION = 2
 
 const NUMERIC_LIMITS: Record<NumericSettingKey, { min: number; max: number }> = {
   fontSize: { min: 10, max: 24 },
   tabSize: { min: 1, max: 8 },
-  maxLines: { min: 10, max: 200 },
+  maxLines: { min: 10, max: 500 },
 }
 
 const BOOLEAN_KEYS: BooleanSettingKey[] = ['lineNumbers', 'smoothCaret']
 
 export const useSettingsStore = defineStore('settings', () => {
   const settings = reactive<AppSettings>({
-    fontSize: 14,
+    fontSize: 15,
     tabSize: 2,
-    maxLines: 50,
+    maxLines: 200,
     lineNumbers: true,
     smoothCaret: true,
     theme: 'dark',
@@ -48,7 +49,11 @@ export const useSettingsStore = defineStore('settings', () => {
       const parsed = JSON.parse(saved)
       if (typeof parsed !== 'object' || parsed === null) return
 
+      const storedVersion = typeof parsed._version === 'number' ? parsed._version : 1
+
       for (const key of Object.keys(NUMERIC_LIMITS) as NumericSettingKey[]) {
+        // v1→v2 migration: maxLines default was 50, skip to let new default (200) stand
+        if (key === 'maxLines' && storedVersion < 2 && parsed[key] === 50) continue
         if (typeof parsed[key] === 'number' && isFinite(parsed[key])) {
           const { min, max } = NUMERIC_LIMITS[key]
           settings[key] = Math.max(min, Math.min(max, parsed[key]))
@@ -72,7 +77,7 @@ export const useSettingsStore = defineStore('settings', () => {
 
   function saveToStorage() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...settings, _version: SETTINGS_VERSION }))
     } catch {
       /* ignore */
     }

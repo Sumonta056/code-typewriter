@@ -1,5 +1,6 @@
 import { onScopeDispose } from 'vue'
 import { useTypingStore } from '~/stores/typing'
+import { useLiveStatsStore } from '~/stores/liveStats'
 import {
   ACCURACY_SAMPLE_INTERVAL_S,
   MAX_ACCURACY_SAMPLES,
@@ -8,6 +9,7 @@ import {
 
 export function useTypingStats() {
   const store = useTypingStore()
+  const liveStats = useLiveStatsStore()
 
   const wpm = ref(0)
   const rawWpm = ref(0)
@@ -48,6 +50,7 @@ export function useTypingStats() {
     const mins = Math.floor(elapsed / 60)
     const secs = Math.floor(elapsed % 60)
     elapsedFormatted.value = `${mins}:${secs.toString().padStart(2, '0')}`
+    liveStats.set(wpm.value, accuracy.value, elapsedFormatted.value, progress.value)
 
     if (elapsed > 0 && accuracyHistory.value.length < MAX_ACCURACY_SAMPLES) {
       const last = accuracyHistory.value[accuracyHistory.value.length - 1]
@@ -86,6 +89,7 @@ export function useTypingStats() {
     const mins = Math.floor(elapsed / 60)
     const secs = Math.floor(elapsed % 60)
     elapsedFormatted.value = `${mins}:${secs.toString().padStart(2, '0')}`
+    liveStats.set(wpm.value, accuracy.value, elapsedFormatted.value, progress.value)
   }
 
   function resetStats() {
@@ -97,6 +101,7 @@ export function useTypingStats() {
     elapsedSeconds.value = 0
     progress.value = 0
     accuracyHistory.value = []
+    liveStats.reset()
   }
 
   onScopeDispose(() => {

@@ -33,9 +33,9 @@
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Settings-driven */
-  --code-font-size: 14px;
+  --code-font-size: 15px;
   --code-tab-size: 2;
-  --code-line-height: 1.75;
+  --code-line-height: 2;
 
   /* Syntax highlighting — One Dark Pro inspired */
   --syn-keyword: #c678dd;

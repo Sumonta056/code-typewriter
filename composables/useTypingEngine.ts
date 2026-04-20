@@ -19,6 +19,16 @@ export function useTypingEngine() {
   const showResults = ref(false)
   const typingActive = ref(false)
   const isNewPB = ref(false)
+
+  watch(
+    () => settingsStore.settings.maxLines,
+    async () => {
+      const url = typingStore.fileUrl
+      const name = typingStore.fileName
+      if (!url || typingStore.currentIndex > 0) return
+      await loadCode(url, name)
+    },
+  )
   // Track error positions per character during session
   const sessionErrorMap = ref<Record<string, number>>({})
   let typingTimeout: ReturnType<typeof setTimeout> | null = null
