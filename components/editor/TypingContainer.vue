@@ -16,6 +16,7 @@
 </template>
 
 <script setup lang="ts">
+  import type CodeDisplay from '~/components/editor/CodeDisplay.vue'
   import type { CharState, TokenType } from '~/types'
 
   defineProps<{
@@ -29,7 +30,7 @@
     typingActive: boolean
   }>()
 
-  const codeDisplayRef = ref<InstanceType<any> | null>(null)
+  const codeDisplayRef = ref<InstanceType<typeof CodeDisplay> | null>(null)
 
   defineExpose({ codeDisplayRef })
 </script>
