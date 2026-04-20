@@ -41,15 +41,3 @@
 
   defineExpose({ focus, clear })
 </script>
-
-<style scoped>
-  .hidden-input {
-    position: absolute;
-    opacity: 0;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    pointer-events: none;
-  }
-</style>

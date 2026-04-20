@@ -1,8 +1,16 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
-  modules: ['@pinia/nuxt'],
+  modules: ['@pinia/nuxt', '@nuxtjs/tailwindcss'],
   ssr: false,
-  css: ['~/assets/css/variables.css', '~/assets/css/base.css', '~/assets/css/transitions.css'],
+  experimental: {
+    appManifest: false,
+  },
+  css: [
+    '~/assets/css/variables.css',
+    '~/assets/css/base.css',
+    '~/assets/css/transitions.css',
+    '~/assets/css/components.css',
+  ],
   app: {
     head: {
       title: 'Code Typewriter — Practice Real Code',

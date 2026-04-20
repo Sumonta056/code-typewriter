@@ -1,11 +1,10 @@
-import { useTypingStore } from '~/stores/typing'
+import { useGithubFetcher } from '~/composables/useGithubFetcher'
+import { useTokenizer } from '~/composables/useTokenizer'
+import { useTypingStats } from '~/composables/useTypingStats'
+import { useHistoryStore } from '~/stores/history'
 import { useSettingsStore } from '~/stores/settings'
 import { useSnippetsStore } from '~/stores/snippets'
-import { useHistoryStore } from '~/stores/history'
-import { useTokenizer } from '~/composables/useTokenizer'
-import { useGithubFetcher } from '~/composables/useGithubFetcher'
-import { useTypingStats } from '~/composables/useTypingStats'
-import { useAudio } from '~/composables/useAudio'
+import { useTypingStore } from '~/stores/typing'
 
 export function useTypingEngine() {
   const typingStore = useTypingStore()
@@ -15,7 +14,6 @@ export function useTypingEngine() {
   const { tokenize } = useTokenizer()
   const fetcher = useGithubFetcher()
   const stats = useTypingStats()
-  const { playKeySound } = useAudio()
 
   const showResults = ref(false)
   const typingActive = ref(false)
@@ -74,7 +72,6 @@ export function useTypingEngine() {
     }
 
     setTypingActive()
-    playKeySound(settingsStore.settings.sound)
 
     const expected = typingStore.code[typingStore.currentIndex]
     if (char === expected) {

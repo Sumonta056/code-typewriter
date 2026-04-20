@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { AppSettings, NumericSettingKey, BooleanSettingKey, ThemeKey } from '~/types'
+import type { AppSettings, BooleanSettingKey, NumericSettingKey, ThemeKey } from '~/types'
 
 const STORAGE_KEY = 'codeTypeSettings'
 
@@ -149,7 +149,6 @@ export const useSettingsStore = defineStore('settings', () => {
     fontSize: 14,
     tabSize: 2,
     maxLines: 50,
-    sound: false,
     lineNumbers: true,
     smoothCaret: true,
     theme: 'dark',
@@ -188,7 +187,7 @@ export const useSettingsStore = defineStore('settings', () => {
         }
       }
 
-      const boolKeys: BooleanSettingKey[] = ['sound', 'lineNumbers', 'smoothCaret']
+      const boolKeys: BooleanSettingKey[] = ['lineNumbers', 'smoothCaret']
       for (const key of boolKeys) {
         if (typeof parsed[key] === 'boolean') {
           settings[key] = parsed[key]

@@ -39,35 +39,3 @@
     progress: number
   }>()
 </script>
-
-<style scoped>
-  .header-stats {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    opacity: 0;
-    transform: translateY(-4px);
-    transition:
-      opacity 0.4s var(--ease),
-      transform 0.4s var(--ease);
-  }
-  .header-stats.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  .stat-divider {
-    width: 1px;
-    height: 32px;
-    background: var(--border);
-  }
-
-  @media (max-width: 768px) {
-    .stat-divider {
-      display: none;
-    }
-    .header-stats {
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-  }
-</style>

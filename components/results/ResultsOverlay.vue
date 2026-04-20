@@ -95,16 +95,3 @@
     }
   }
 </script>
-
-<style scoped>
-  .results-overlay {
-    position: fixed;
-    inset: 0;
-    background: var(--bg-overlay);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    outline: none;
-  }
-</style>

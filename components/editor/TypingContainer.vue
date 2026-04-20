@@ -33,22 +33,3 @@
 
   defineExpose({ codeDisplayRef })
 </script>
-
-<style scoped>
-  .typing-container {
-    flex: 1;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .typing-active :deep(.char.current::before) {
-    animation: none;
-    opacity: 1;
-  }
-
-  .smooth-caret :deep(.char.current::before) {
-    transition:
-      left 50ms var(--ease),
-      top 50ms var(--ease);
-  }
-</style>

@@ -114,22 +114,3 @@
     reset: []
   }>()
 </script>
-
-<style scoped>
-  .toolbar-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .toolbar-separator {
-    width: 1px;
-    height: 24px;
-    background: var(--border);
-    margin: 0 4px;
-  }
-
-  .pause-btn--paused :deep(svg) {
-    color: var(--accent);
-  }
-</style>
