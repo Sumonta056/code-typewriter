@@ -37,7 +37,7 @@
             :key="t.id"
             :class="['theme-btn', { active: settings.theme === t.id }]"
             :title="t.label"
-            @click="setTheme(t.id as 'dark' | 'monokai' | 'solarized')"
+            @click="setTheme(t.id as ThemeKey)"
           >
             <span class="theme-dot" :style="{ background: t.color }" />
             {{ t.label }}
@@ -50,6 +50,8 @@
 
 <script setup lang="ts">
   import { useSettingsStore } from '~/stores/settings'
+  import type { ThemeKey } from '~/types'
+  import { THEME_OPTIONS } from '~/utils/themes'
 
   defineProps<{ open: boolean }>()
 
@@ -57,9 +59,5 @@
   const { settings } = settingsStore
   const { updateNumeric, toggleBoolean, setTheme } = settingsStore
 
-  const themes = [
-    { id: 'dark', label: 'Dark', color: '#58a6ff' },
-    { id: 'monokai', label: 'Monokai', color: '#a6e22e' },
-    { id: 'solarized', label: 'Solarized', color: '#268bd2' },
-  ]
+  const themes = THEME_OPTIONS
 </script>
