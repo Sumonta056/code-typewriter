@@ -52,11 +52,9 @@
         <div class="sb-label">Controls</div>
         <ToolbarActions
           :url-open="urlOpen"
-          :settings-open="settingsOpen"
           :can-pause="typingStore.isActive && !typingStore.isComplete"
           :is-paused="typingStore.isPaused"
           @toggle-url="toggleUrl"
-          @toggle-settings="toggleSettings"
           @toggle-pause="engine.togglePause()"
           @reset="onReset"
         />
@@ -81,9 +79,6 @@
 
     <!-- Editor column -->
     <div class="pp-editor">
-      <PanelsUrlPanel :open="urlOpen" :error="urlError" @fetch="onLoadFromUrl" />
-      <PanelsSettingsPanel :open="settingsOpen" />
-
       <div class="file-tab-row">
         <EditorFileTabBar
           :file-name="typingStore.fileName || 'untitled'"
@@ -141,6 +136,8 @@
     />
 
     <OverlayLoadingOverlay :visible="engine.fetcher.isLoading.value" />
+
+    <PanelsUrlPanel :open="urlOpen" :error="urlError" @fetch="onLoadFromUrl" @close="closeUrl" />
   </div>
 </template>
 
@@ -154,12 +151,11 @@
     bookmarksStore,
     engine,
     urlOpen,
-    settingsOpen,
     urlError,
     hiddenInputRef,
     typingContainerRef,
     toggleUrl,
-    toggleSettings,
+    closeUrl,
     focusInput,
     onLoadRandom,
     onLanguageSelect,

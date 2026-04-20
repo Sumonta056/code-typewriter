@@ -7,6 +7,7 @@
         <div class="nav-links">
           <NuxtLink to="/" class="nav-link" active-class="active"> Practice </NuxtLink>
           <NuxtLink to="/profile" class="nav-link" active-class="active"> Profile </NuxtLink>
+          <NuxtLink to="/settings" class="nav-link" active-class="active"> Settings </NuxtLink>
           <NuxtLink to="/about" class="nav-link" active-class="active"> About </NuxtLink>
           <a
             href="https://forms.gle/S1FJaEpzGcnMQbm77"

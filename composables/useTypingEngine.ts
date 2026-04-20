@@ -1,3 +1,4 @@
+import { onScopeDispose } from 'vue'
 import { useGithubFetcher } from '~/composables/useGithubFetcher'
 import { useTypingStats } from '~/composables/useTypingStats'
 import { useHistoryStore } from '~/stores/history'
@@ -42,6 +43,7 @@ export function useTypingEngine() {
   // Track error positions per character during session
   const sessionErrorMap = ref<Record<string, number>>({})
   let typingTimeout: ReturnType<typeof setTimeout> | null = null
+  let resultsTimeout: ReturnType<typeof setTimeout> | null = null
 
   const fileProgress = computed(() => {
     if (typingStore.charCount === 0) return ''
@@ -149,7 +151,7 @@ export function useTypingEngine() {
       errorMap: { ...sessionErrorMap.value },
     })
 
-    setTimeout(() => {
+    resultsTimeout = setTimeout(() => {
       showResults.value = true
     }, RESULTS_SHOW_DELAY_MS)
   }
@@ -175,7 +177,17 @@ export function useTypingEngine() {
 
   function cleanup() {
     stats.stopTimer()
+    if (typingTimeout) {
+      clearTimeout(typingTimeout)
+      typingTimeout = null
+    }
+    if (resultsTimeout) {
+      clearTimeout(resultsTimeout)
+      resultsTimeout = null
+    }
   }
+
+  onScopeDispose(cleanup)
 
   return {
     stats,

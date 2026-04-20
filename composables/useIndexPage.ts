@@ -25,7 +25,6 @@ export function useIndexPage() {
   const { scrollToIndex } = useScrollTracker()
 
   const urlOpen = ref(false)
-  const settingsOpen = ref(false)
   const urlError = ref(false)
 
   const hiddenInputRef = ref<HiddenInputRef | null>(null)
@@ -33,11 +32,9 @@ export function useIndexPage() {
 
   function toggleUrl() {
     urlOpen.value = !urlOpen.value
-    settingsOpen.value = false
   }
 
-  function toggleSettings() {
-    settingsOpen.value = !settingsOpen.value
+  function closeUrl() {
     urlOpen.value = false
   }
 
@@ -76,7 +73,10 @@ export function useIndexPage() {
     }
 
     const ok = await engine.loadCode(trimmed, parsed.path.split('/').pop() || 'file')
-    if (ok) focusAndClear()
+    if (ok) {
+      closeUrl()
+      focusAndClear()
+    }
   }
 
   async function onLoadBookmark(bm: BookmarkedFile) {
@@ -169,12 +169,11 @@ export function useIndexPage() {
     bookmarksStore,
     engine,
     urlOpen,
-    settingsOpen,
     urlError,
     hiddenInputRef,
     typingContainerRef,
     toggleUrl,
-    toggleSettings,
+    closeUrl,
     focusInput,
     onLoadRandom,
     onLanguageSelect,
