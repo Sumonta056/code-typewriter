@@ -69,7 +69,7 @@ function getHighlighter(): Promise<Highlighter> {
 }
 
 export function getLangFromUrl(url: string): string {
-  const ext = url.split('.').pop()?.split('?')[0].toLowerCase() ?? ''
+  const ext = url.split('.').pop()?.split('?')[0]?.toLowerCase() ?? ''
   return EXT_TO_LANG[ext] ?? ''
 }
 
