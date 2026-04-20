@@ -1,18 +1,17 @@
 import { useGithubFetcher } from '~/composables/useGithubFetcher'
-import { useTokenizer } from '~/composables/useTokenizer'
 import { useTypingStats } from '~/composables/useTypingStats'
 import { useHistoryStore } from '~/stores/history'
 import { useSettingsStore } from '~/stores/settings'
 import { useSnippetsStore } from '~/stores/snippets'
 import { useTypingStore } from '~/stores/typing'
 import { RESULTS_SHOW_DELAY_MS, TYPING_ACTIVE_TIMEOUT_MS } from '~/utils/constants'
+import { tokenizeCode } from '~/utils/shikiHighlighter'
 
 export function useTypingEngine() {
   const typingStore = useTypingStore()
   const settingsStore = useSettingsStore()
   const snippetsStore = useSnippetsStore()
   const historyStore = useHistoryStore()
-  const { tokenize } = useTokenizer()
   const fetcher = useGithubFetcher()
   const stats = useTypingStats()
 
@@ -27,6 +26,17 @@ export function useTypingEngine() {
       const name = typingStore.fileName
       if (!url || typingStore.currentIndex > 0) return
       await loadCode(url, name)
+    },
+  )
+
+  watch(
+    () => settingsStore.settings.editorTheme,
+    async (theme) => {
+      const code = typingStore.code
+      const url = typingStore.fileUrl
+      if (!code || !url) return
+      const tokens = await tokenizeCode(code, url, theme)
+      typingStore.updateTokens(tokens)
     },
   )
   // Track error positions per character during session
@@ -55,7 +65,7 @@ export function useTypingEngine() {
     // Expand tabs to spaces so the user can type Space for indentation
     const tabSpaces = ' '.repeat(settingsStore.settings.tabSize)
     const code = result.code.replace(/\t/g, tabSpaces)
-    const tokens = tokenize(code)
+    const tokens = await tokenizeCode(code, url, settingsStore.settings.editorTheme)
     typingStore.setupSession(code, tokens, result.fileName || name, url)
     stats.resetStats()
     showResults.value = false

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import type { AppSettings, BooleanSettingKey, NumericSettingKey, ThemeKey } from '~/types'
+import { DEFAULT_EDITOR_THEME } from '~/utils/shikiHighlighter'
 import { THEME_KEYS, THEME_VARS } from '~/utils/themes'
 
 const STORAGE_KEY = 'codeTypeSettings'
@@ -21,6 +22,7 @@ export const useSettingsStore = defineStore('settings', () => {
     lineNumbers: true,
     smoothCaret: true,
     theme: 'dark',
+    editorTheme: DEFAULT_EDITOR_THEME,
   })
 
   function updateNumeric(key: NumericSettingKey, delta: number) {
@@ -40,6 +42,11 @@ export const useSettingsStore = defineStore('settings', () => {
     settings.theme = theme
     saveToStorage()
     applyTheme(theme)
+  }
+
+  function setEditorTheme(theme: string) {
+    settings.editorTheme = theme
+    saveToStorage()
   }
 
   function loadFromStorage() {
@@ -68,6 +75,10 @@ export const useSettingsStore = defineStore('settings', () => {
 
       if (parsed.theme && THEME_KEYS.includes(parsed.theme)) {
         settings.theme = parsed.theme as ThemeKey
+      }
+
+      if (typeof parsed.editorTheme === 'string' && parsed.editorTheme) {
+        settings.editorTheme = parsed.editorTheme
       }
     } catch {
       /* ignore */
@@ -105,6 +116,7 @@ export const useSettingsStore = defineStore('settings', () => {
     updateNumeric,
     toggleBoolean,
     setTheme,
+    setEditorTheme,
     loadFromStorage,
     saveToStorage,
     applyCssVariables,

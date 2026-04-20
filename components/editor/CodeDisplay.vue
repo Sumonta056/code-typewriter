@@ -6,7 +6,8 @@
       :key="i"
       ref="charEls"
       v-memo="[charStates[i], tokens[i], i === currentIndex]"
-      :class="charClass(charStates[i], tokens[i], i === currentIndex)"
+      :class="charClass(charStates[i], i === currentIndex)"
+      :style="tokens[i] ? { color: tokens[i] } : undefined"
     >{{ ch }}</span></pre>
   </div>
 </template>
@@ -28,12 +29,8 @@
   const chars = computed(() => props.code.split(''))
   const lineCount = computed(() => props.code.split('\n').length)
 
-  function charClass(
-    state: CharState | undefined,
-    token: TokenType | undefined,
-    isCurrent: boolean,
-  ): string {
-    let cls = `char ${state || 'pending'} syn-${token || 'plain'}`
+  function charClass(state: CharState | undefined, isCurrent: boolean): string {
+    let cls = `char ${state || 'pending'}`
     if (isCurrent) cls += ' current'
     return cls
   }

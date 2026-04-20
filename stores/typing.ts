@@ -107,6 +107,11 @@ export const useTypingStore = defineStore('typing', () => {
     }
   }
 
+  function updateTokens(newTokens: string[]) {
+    tokens.value = newTokens
+    triggerRef(tokens)
+  }
+
   return {
     code,
     fileName,
@@ -134,5 +139,6 @@ export const useTypingStore = defineStore('typing', () => {
     resume,
     reset,
     startTimer,
+    updateTokens,
   }
 })

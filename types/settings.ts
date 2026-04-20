@@ -5,6 +5,7 @@ export interface AppSettings {
   lineNumbers: boolean
   smoothCaret: boolean
   theme: 'dark' | 'monokai' | 'solarized'
+  editorTheme: string
 }
 
 export type NumericSettingKey = 'fontSize' | 'tabSize' | 'maxLines'

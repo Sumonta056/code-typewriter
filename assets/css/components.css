@@ -864,75 +864,6 @@
   border-bottom: 2px solid rgba(var(--red-rgb), 0.45);
 }
 
-/* Syntax colors */
-.char.syn-plain {
-  color: var(--syn-plain);
-}
-.char.syn-keyword {
-  color: var(--syn-keyword);
-}
-.char.syn-control {
-  color: var(--syn-control);
-}
-.char.syn-string {
-  color: var(--syn-string);
-}
-.char.syn-number {
-  color: var(--syn-number);
-}
-.char.syn-comment {
-  color: var(--syn-comment);
-  font-style: italic;
-}
-.char.syn-func-call {
-  color: var(--syn-func-call);
-}
-.char.syn-type {
-  color: var(--syn-type);
-}
-.char.syn-builtin {
-  color: var(--syn-builtin);
-}
-.char.syn-operator {
-  color: var(--syn-operator);
-}
-.char.syn-bracket {
-  color: var(--syn-bracket);
-}
-.char.syn-brace {
-  color: var(--syn-brace);
-}
-.char.syn-punctuation {
-  color: var(--syn-punctuation);
-}
-.char.syn-property {
-  color: var(--syn-property);
-}
-.char.syn-boolean {
-  color: var(--syn-boolean);
-}
-.char.syn-null {
-  color: var(--syn-null);
-}
-.char.syn-import {
-  color: var(--syn-import);
-}
-.char.syn-decorator {
-  color: var(--syn-decorator);
-}
-.char.syn-tag-bracket {
-  color: var(--syn-tag-bracket);
-}
-.char.syn-tag-name {
-  color: var(--syn-tag-name);
-}
-.char.syn-tag-attr {
-  color: var(--syn-tag-attr);
-}
-.char.syn-tag-attr-special {
-  color: var(--syn-tag-attr-special);
-}
-
 /* Cursor */
 .char.current::before {
   content: '';
@@ -1019,6 +950,35 @@
   height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
+}
+.editor-theme-select {
+  flex: 1;
+  max-width: 260px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text);
+  font-family: var(--font-code);
+  font-size: 0.68rem;
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease);
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236e7a91' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 28px;
+}
+.editor-theme-select:hover,
+.editor-theme-select:focus {
+  border-color: var(--border-lit);
+  outline: none;
+}
+.editor-theme-select option,
+.editor-theme-select optgroup {
+  background: var(--bg-surface);
+  color: var(--text);
 }
 
 @media (max-width: 768px) {

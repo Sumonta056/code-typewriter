@@ -28,9 +28,9 @@
         @toggle="toggleBoolean('smoothCaret')"
       />
 
-      <!-- Theme switcher -->
+      <!-- UI Theme switcher -->
       <div class="theme-setting">
-        <span class="theme-label">Theme</span>
+        <span class="theme-label">UI Theme</span>
         <div class="theme-btns">
           <button
             v-for="t in themes"
@@ -44,20 +44,46 @@
           </button>
         </div>
       </div>
+
+      <!-- Editor syntax theme -->
+      <div class="theme-setting">
+        <span class="theme-label">Editor Theme</span>
+        <select
+          class="editor-theme-select"
+          :value="settings.editorTheme"
+          @change="(e) => setEditorTheme((e.target as HTMLSelectElement).value)"
+        >
+          <optgroup label="Dark">
+            <option v-for="t in darkThemes" :key="t.id" :value="t.id">
+              {{ t.displayName }}
+            </option>
+          </optgroup>
+          <optgroup label="Light">
+            <option v-for="t in lightThemes" :key="t.id" :value="t.id">
+              {{ t.displayName }}
+            </option>
+          </optgroup>
+        </select>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+  import { computed } from 'vue'
   import { useSettingsStore } from '~/stores/settings'
   import type { ThemeKey } from '~/types'
+  import { SHIKI_THEMES } from '~/utils/shikiHighlighter'
   import { THEME_OPTIONS } from '~/utils/themes'
 
   defineProps<{ open: boolean }>()
 
   const settingsStore = useSettingsStore()
   const { settings } = settingsStore
-  const { updateNumeric, toggleBoolean, setTheme } = settingsStore
+  const { updateNumeric, toggleBoolean, setTheme, setEditorTheme } = settingsStore
 
   const themes = THEME_OPTIONS
+
+  const darkThemes = computed(() => SHIKI_THEMES.filter((t) => t.type === 'dark'))
+  const lightThemes = computed(() => SHIKI_THEMES.filter((t) => t.type === 'light'))
 </script>

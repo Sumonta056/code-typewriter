@@ -1,28 +1,7 @@
 export type CharState = 'pending' | 'correct' | 'incorrect'
 
-export type TokenType =
-  | 'plain'
-  | 'keyword'
-  | 'control'
-  | 'string'
-  | 'number'
-  | 'comment'
-  | 'func-call'
-  | 'type'
-  | 'builtin'
-  | 'operator'
-  | 'bracket'
-  | 'brace'
-  | 'punctuation'
-  | 'property'
-  | 'boolean'
-  | 'null'
-  | 'import'
-  | 'decorator'
-  | 'tag-bracket'
-  | 'tag-name'
-  | 'tag-attr'
-  | 'tag-attr-special'
+// A hex color string from Shiki (e.g. '#c678dd') or '' for uncolored
+export type TokenType = string
 
 export interface SessionResult {
   wpm: number
