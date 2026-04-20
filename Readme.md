@@ -16,7 +16,6 @@ Instead of random words, you type actual production code from popular open-sourc
 - **Profile analytics** — WPM trend chart, 52-week practice calendar, per-language breakdown, character error heatmap
 - **Bookmarks** — Star files you want to revisit
 - **Custom URLs** — Load any raw GitHub file
-- **Keyboard sound** — Optional procedurally-generated click feedback via Web Audio API
 - **Pause / resume** — Pause time is excluded from stats
 - **Configurable editor** — Font size, tab size, max lines, line numbers toggle
 
@@ -32,7 +31,6 @@ Instead of random words, you type actual production code from popular open-sourc
 | Styling             | Scoped CSS + CSS custom properties          |
 | Code fetching       | Fetch API (GitHub raw + API fallback)       |
 | Syntax highlighting | Custom tokenizer (no Prism / Highlight.js)  |
-| Sound               | Web Audio API (procedural, no audio files)  |
 | Persistence         | LocalStorage (settings, history, bookmarks) |
 | Fonts               | Fira Code (editor), Space Grotesk (UI)      |
 | Code quality        | ESLint + Prettier + Husky + lint-staged     |
@@ -142,7 +140,6 @@ code-typewriter/
 │   ├── useGithubFetcher.ts  # GitHub file fetching
 │   ├── useTokenizer.ts      # Syntax highlighting tokenization
 │   ├── useKeyboardHandler.ts # Tab / Enter / Backspace normalization
-│   ├── useAudio.ts          # Procedural key click sound
 │   └── useScrollTracker.ts  # Auto-scroll to cursor
 ├── stores/
 │   ├── typing.ts            # Active session state

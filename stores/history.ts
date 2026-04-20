@@ -1,8 +1,15 @@
 import { defineStore } from 'pinia'
 import type { HistoryEntry, LanguageStat } from '~/types'
+import {
+  CALENDAR_WEEKS,
+  ERROR_HEATMAP_TOP_N,
+  HISTORY_MAX_ENTRIES,
+  MS_PER_DAY,
+  RECENT_ENTRIES_WINDOW,
+  WPM_TREND_WINDOW,
+} from '~/utils/constants'
 
 const STORAGE_KEY = 'codeTypeHistory'
-const MAX_ENTRIES = 100
 
 export const useHistoryStore = defineStore('history', () => {
   const entries = ref<HistoryEntry[]>([])
@@ -48,10 +55,10 @@ export const useHistoryStore = defineStore('history', () => {
 
   const totalErrors = computed(() => entries.value.reduce((acc, e) => acc + e.errors, 0))
 
-  const recentEntries = computed(() => [...entries.value].reverse().slice(0, 20))
+  const recentEntries = computed(() => [...entries.value].reverse().slice(0, RECENT_ENTRIES_WINDOW))
 
   const wpmTrend = computed(() => {
-    const recent = [...entries.value].slice(-20)
+    const recent = [...entries.value].slice(-WPM_TREND_WINDOW)
     if (recent.length === 0) return []
     const max = Math.max(...recent.map((e) => e.wpm), 1)
     return recent.map((e) => ({
@@ -86,34 +93,28 @@ export const useHistoryStore = defineStore('history', () => {
       .sort((a, b) => b.sessions - a.sessions)
   })
 
-  // Calendar heatmap: last 52 weeks of daily session counts
   const calendarData = computed(() => {
     const today = new Date()
     today.setHours(23, 59, 59, 999)
-    // Build a map of date → count
     const dayMap = new Map<string, number>()
     for (const e of entries.value) {
       const d = e.date.slice(0, 10)
       dayMap.set(d, (dayMap.get(d) || 0) + 1)
     }
 
-    // Generate 52 weeks (364 days) + partial current week
-    // Start from Monday 53 weeks ago
-    const msPerDay = 86400000
     const todayMs = today.getTime()
-    // Find the Monday of the current week
     const dayOfWeek = (today.getDay() + 6) % 7 // 0=Mon, 6=Sun
-    const thisMonday = new Date(todayMs - dayOfWeek * msPerDay)
+    const thisMonday = new Date(todayMs - dayOfWeek * MS_PER_DAY)
     thisMonday.setHours(0, 0, 0, 0)
-    const startMs = thisMonday.getTime() - 51 * 7 * msPerDay
+    const startMs = thisMonday.getTime() - (CALENDAR_WEEKS - 1) * 7 * MS_PER_DAY
 
     const weeks: { date: string; count: number; isToday: boolean }[][] = []
     const todayStr = today.toISOString().slice(0, 10)
 
-    for (let w = 0; w < 52; w++) {
+    for (let w = 0; w < CALENDAR_WEEKS; w++) {
       const week: { date: string; count: number; isToday: boolean }[] = []
       for (let d = 0; d < 7; d++) {
-        const ms = startMs + (w * 7 + d) * msPerDay
+        const ms = startMs + (w * 7 + d) * MS_PER_DAY
         const dateStr = new Date(ms).toISOString().slice(0, 10)
         week.push({
           date: dateStr,
@@ -138,7 +139,7 @@ export const useHistoryStore = defineStore('history', () => {
     }
     return [...map.entries()]
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 15)
+      .slice(0, ERROR_HEATMAP_TOP_N)
       .map(([char, count]) => ({ char, count }))
   })
 
@@ -147,7 +148,7 @@ export const useHistoryStore = defineStore('history', () => {
     const days = getUniqueDays()
     if (days.length === 0) return 0
     const today = todayStr()
-    const yesterday = dayStr(Date.now() - 86400000)
+    const yesterday = dayStr(Date.now() - MS_PER_DAY)
     if (days[days.length - 1] !== today && days[days.length - 1] !== yesterday) return 0
     let streak = 1
     for (let i = days.length - 2; i >= 0; i--) {
@@ -186,13 +187,13 @@ export const useHistoryStore = defineStore('history', () => {
     return new Date(ms).toISOString().slice(0, 10)
   }
   function dayDiff(a: string, b: string): number {
-    return Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86400000)
+    return Math.round((new Date(b).getTime() - new Date(a).getTime()) / MS_PER_DAY)
   }
 
   function addEntry(entry: Omit<HistoryEntry, 'id'>) {
     entries.value.push({ ...entry, id: crypto.randomUUID() })
-    if (entries.value.length > MAX_ENTRIES) {
-      entries.value = entries.value.slice(-MAX_ENTRIES)
+    if (entries.value.length > HISTORY_MAX_ENTRIES) {
+      entries.value = entries.value.slice(-HISTORY_MAX_ENTRIES)
     }
     saveToStorage()
   }
@@ -207,7 +208,7 @@ export const useHistoryStore = defineStore('history', () => {
       const saved = localStorage.getItem(STORAGE_KEY)
       if (saved) {
         const parsed = JSON.parse(saved) as HistoryEntry[]
-        entries.value = parsed.slice(-MAX_ENTRIES)
+        entries.value = parsed.slice(-HISTORY_MAX_ENTRIES)
       }
     } catch {
       /* ignore */

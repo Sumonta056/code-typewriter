@@ -1,0 +1,20 @@
+export const STATS_UPDATE_INTERVAL_MS = 200
+export const ACCURACY_SAMPLE_INTERVAL_S = 1
+export const MAX_ACCURACY_SAMPLES = 120
+
+export const TYPING_ACTIVE_TIMEOUT_MS = 500
+export const RESULTS_SHOW_DELAY_MS = 350
+export const URL_ERROR_RESET_MS = 1500
+
+export const HISTORY_MAX_ENTRIES = 100
+export const WPM_TREND_WINDOW = 20
+export const RECENT_ENTRIES_WINDOW = 20
+export const ERROR_HEATMAP_TOP_N = 15
+export const CALENDAR_WEEKS = 52
+
+export const SCROLL_MARGIN_TOP = 80
+export const SCROLL_MARGIN_BOTTOM = 80
+export const SCROLL_MARGIN_LEFT = 80
+export const SCROLL_MARGIN_RIGHT = 40
+
+export const MS_PER_DAY = 86400000

@@ -1,5 +1,10 @@
 import { onScopeDispose } from 'vue'
 import { useTypingStore } from '~/stores/typing'
+import {
+  ACCURACY_SAMPLE_INTERVAL_S,
+  MAX_ACCURACY_SAMPLES,
+  STATS_UPDATE_INTERVAL_MS,
+} from '~/utils/constants'
 
 export function useTypingStats() {
   const store = useTypingStore()
@@ -44,10 +49,9 @@ export function useTypingStats() {
     const secs = Math.floor(elapsed % 60)
     elapsedFormatted.value = `${mins}:${secs.toString().padStart(2, '0')}`
 
-    // Sample accuracy history every ~1s (every 5 × 200ms ticks)
-    if (elapsed > 0 && accuracyHistory.value.length < 120) {
+    if (elapsed > 0 && accuracyHistory.value.length < MAX_ACCURACY_SAMPLES) {
       const last = accuracyHistory.value[accuracyHistory.value.length - 1]
-      if (!last || elapsed - last.t >= 1) {
+      if (!last || elapsed - last.t >= ACCURACY_SAMPLE_INTERVAL_S) {
         accuracyHistory.value.push({ t: Math.round(elapsed), v: accuracy.value })
       }
     }
@@ -55,7 +59,7 @@ export function useTypingStats() {
 
   function startTimer() {
     stopTimer()
-    intervalId = setInterval(update, 200)
+    intervalId = setInterval(update, STATS_UPDATE_INTERVAL_MS)
   }
 
   function stopTimer() {

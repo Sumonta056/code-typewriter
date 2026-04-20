@@ -115,7 +115,6 @@ Conventions, patterns, and rules that govern how this codebase is structured and
 | `fontSize`    | number  | 14      | 10  | 24  | yes       |
 | `tabSize`     | number  | 2       | 1   | 8   | yes       |
 | `maxLines`    | number  | 50      | 10  | 200 | yes       |
-| `sound`       | boolean | false   | —   | —   | yes       |
 | `lineNumbers` | boolean | true    | —   | —   | yes       |
 | `smoothCaret` | boolean | true    | —   | —   | yes       |
 

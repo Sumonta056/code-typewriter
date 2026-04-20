@@ -155,6 +155,7 @@
   import { useSettingsStore } from '~/stores/settings'
   import { useSnippetsStore } from '~/stores/snippets'
   import { useTypingStore } from '~/stores/typing'
+  import { URL_ERROR_RESET_MS } from '~/utils/constants'
 
   const typingStore = useTypingStore()
   const settingsStore = useSettingsStore()
@@ -207,7 +208,7 @@
       urlError.value = true
       setTimeout(() => {
         urlError.value = false
-      }, 1500)
+      }, URL_ERROR_RESET_MS)
       return
     }
 

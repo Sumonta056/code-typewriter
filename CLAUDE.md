@@ -35,7 +35,6 @@ npm run format:check  # Prettier check
 | `composables/useGithubFetcher.ts`   | Parses GitHub URLs, fetches raw file content                     |
 | `composables/useTokenizer.ts`       | Custom syntax tokenizer — no external highlighting library       |
 | `composables/useKeyboardHandler.ts` | Normalizes Tab / Enter / Backspace for typing input              |
-| `composables/useAudio.ts`           | Procedural key click sound via Web Audio API                     |
 | `composables/useScrollTracker.ts`   | Auto-scrolls editor to keep cursor visible                       |
 | `stores/typing.ts`                  | Ephemeral session state (code, charStates, currentIndex, errors) |
 | `stores/settings.ts`                | Persisted user preferences (theme, fontSize, tabSize, etc.)      |
@@ -60,7 +59,7 @@ Key actions: `setupSession()`, `advanceCorrect()`, `advanceIncorrect()`, `goBack
 
 ### `stores/settings.ts` — persisted to localStorage
 
-Key state: `fontSize` (10–24), `tabSize` (1–8), `maxLines` (10–200), `sound: boolean`, `lineNumbers: boolean`, `smoothCaret: boolean`, `theme: 'dark' | 'monokai' | 'solarized'`
+Key state: `fontSize` (10–24), `tabSize` (1–8), `maxLines` (10–200), `lineNumbers: boolean`, `smoothCaret: boolean`, `theme: 'dark' | 'monokai' | 'solarized'`
 
 Key actions: `updateNumeric(key, delta)`, `toggleBoolean(key)`, `setTheme(theme)`, `applyCssVariables()`, `loadFromStorage()`, `saveToStorage()`
 
@@ -105,10 +104,6 @@ Returns `TokenType[]` for every character in the code string. Custom implementat
 ### `useKeyboardHandler.ts`
 
 Converts raw `KeyboardEvent` into a normalized string or action. Tab → `' '.repeat(tabSize)`. Enter → `'\n'`. Backspace → calls `processBackspace()`. Meta/Alt/Ctrl keys are ignored.
-
-### `useAudio.ts`
-
-Generates a synthetic key-click using `AudioContext`. Single buffer reused across keystrokes. Enabled/disabled via `settings.sound`.
 
 ### `useScrollTracker.ts`
 
@@ -191,7 +186,6 @@ interface AppSettings {
   fontSize
   tabSize
   maxLines
-  sound
   lineNumbers
   smoothCaret
   theme

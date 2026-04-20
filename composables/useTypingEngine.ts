@@ -5,6 +5,7 @@ import { useHistoryStore } from '~/stores/history'
 import { useSettingsStore } from '~/stores/settings'
 import { useSnippetsStore } from '~/stores/snippets'
 import { useTypingStore } from '~/stores/typing'
+import { RESULTS_SHOW_DELAY_MS, TYPING_ACTIVE_TIMEOUT_MS } from '~/utils/constants'
 
 export function useTypingEngine() {
   const typingStore = useTypingStore()
@@ -32,7 +33,7 @@ export function useTypingEngine() {
     if (typingTimeout) clearTimeout(typingTimeout)
     typingTimeout = setTimeout(() => {
       typingActive.value = false
-    }, 500)
+    }, TYPING_ACTIVE_TIMEOUT_MS)
   }
 
   async function loadCode(url: string, name: string): Promise<boolean> {
@@ -130,7 +131,7 @@ export function useTypingEngine() {
 
     setTimeout(() => {
       showResults.value = true
-    }, 350)
+    }, RESULTS_SHOW_DELAY_MS)
   }
 
   function resetSession() {
