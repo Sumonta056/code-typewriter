@@ -1,32 +1,56 @@
 <template>
-  <div class="typing-placeholder">
-    <div class="placeholder-hero">
-      <div class="placeholder-prompt"><span class="prompt-caret">$</span> code-typewriter</div>
-      <h2 class="placeholder-title">Level up your coding speed</h2>
-      <p class="placeholder-desc">
+  <div
+    class="flex flex-col items-center justify-center flex-1 min-h-[280px] gap-[40px] select-none px-[32px] py-[40px]"
+  >
+    <div class="text-center">
+      <div
+        class="inline-flex items-center gap-[8px] font-code text-[0.75rem] text-c-text-faint bg-bg-raised border border-c-border rounded-[6px] px-[14px] py-[4px] mb-[20px] tracking-[0.05em]"
+      >
+        <span class="text-c-green font-bold">$</span> code-typewriter
+      </div>
+      <h2 class="font-code text-[1.9rem] font-bold text-c-text mb-[12px] tracking-[-0.03em]">
+        Level up your coding speed
+      </h2>
+      <p class="text-[0.9rem] text-c-text-dim leading-[1.65] max-w-[440px] mx-auto">
         Type through real source files — build muscle memory for the syntax you use every day
       </p>
     </div>
 
-    <div class="placeholder-steps">
-      <div class="placeholder-step placeholder-step--1">
-        <span class="placeholder-step-num">01</span>
-        <div class="placeholder-step-body">
-          <div class="placeholder-step-title">Pick a Language</div>
-          <div class="placeholder-step-desc">
-            Choose a <strong>language</strong> from the sidebar, then press <kbd>Start</kbd> to load
-            a random real file from GitHub
+    <div class="grid grid-cols-3 gap-[12px] w-full max-w-[720px] max-[700px]:grid-cols-1">
+      <div
+        class="flex flex-col gap-[10px] bg-bg-surface border border-c-border border-t-2 border-t-c-green rounded-[10px] px-[18px] py-[16px] transition-all duration-200 hover:bg-bg-raised hover:border-c-border-lit"
+      >
+        <span class="font-code text-[0.6rem] font-bold tracking-[0.1em] text-c-green">01</span>
+        <div>
+          <div class="font-code text-[0.82rem] font-bold text-c-text tracking-[0.01em]">
+            Pick a Language
+          </div>
+          <div class="text-[0.8rem] text-c-text-dim leading-[1.6] mt-[10px]">
+            Choose a <strong class="text-c-text font-semibold">language</strong> from the sidebar,
+            then press
+            <kbd
+              class="font-code text-[0.72rem] bg-[rgba(var(--accent-rgb),0.1)] text-c-accent px-[8px] py-[2px] rounded-[4px] border border-[rgba(var(--accent-rgb),0.2)]"
+              >Start</kbd
+            >
+            to load a random real file from GitHub
           </div>
         </div>
       </div>
 
-      <div class="placeholder-step placeholder-step--2">
-        <span class="placeholder-step-num">02</span>
-        <div class="placeholder-step-body">
-          <div class="placeholder-step-title">Use Your Own File</div>
-          <div class="placeholder-step-desc">
+      <div
+        class="flex flex-col gap-[10px] bg-bg-surface border border-c-border border-t-2 border-t-c-yellow rounded-[10px] px-[18px] py-[16px] transition-all duration-200 hover:bg-bg-raised hover:border-c-border-lit"
+      >
+        <span class="font-code text-[0.6rem] font-bold tracking-[0.1em] text-c-yellow">02</span>
+        <div>
+          <div class="font-code text-[0.82rem] font-bold text-c-text tracking-[0.01em]">
+            Use Your Own File
+          </div>
+          <div class="text-[0.8rem] text-c-text-dim leading-[1.6] mt-[10px]">
             Click the
-            <span class="placeholder-inline-btn" title="GitHub URL button">
+            <span
+              class="inline-flex items-center justify-center w-[20px] h-[20px] rounded-[4px] border border-c-border-lit bg-bg-raised text-c-text-dim align-middle mx-[1px]"
+              title="GitHub URL button"
+            >
               <svg
                 width="13"
                 height="13"
@@ -41,18 +65,26 @@
                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
               </svg>
             </span>
-            <strong>URL</strong> button and paste any public GitHub file link
+            <strong class="text-c-text font-semibold">URL</strong> button and paste any public
+            GitHub file link
           </div>
         </div>
       </div>
 
-      <div class="placeholder-step placeholder-step--3">
-        <span class="placeholder-step-num">03</span>
-        <div class="placeholder-step-body">
-          <div class="placeholder-step-title">Customize</div>
-          <div class="placeholder-step-desc">
+      <div
+        class="flex flex-col gap-[10px] bg-bg-surface border border-c-border border-t-2 border-t-c-red rounded-[10px] px-[18px] py-[16px] transition-all duration-200 hover:bg-bg-raised hover:border-c-border-lit"
+      >
+        <span class="font-code text-[0.6rem] font-bold tracking-[0.1em] text-c-red">03</span>
+        <div>
+          <div class="font-code text-[0.82rem] font-bold text-c-text tracking-[0.01em]">
+            Customize
+          </div>
+          <div class="text-[0.8rem] text-c-text-dim leading-[1.6] mt-[10px]">
             Click the
-            <span class="placeholder-inline-btn" title="Settings button">
+            <span
+              class="inline-flex items-center justify-center w-[20px] h-[20px] rounded-[4px] border border-c-border-lit bg-bg-raised text-c-text-dim align-middle mx-[1px]"
+              title="Settings button"
+            >
               <svg
                 width="13"
                 height="13"
@@ -69,7 +101,8 @@
                 />
               </svg>
             </span>
-            <strong>Settings</strong> to change theme, font size &amp; line count
+            <strong class="text-c-text font-semibold">Settings</strong> to change theme, font size
+            &amp; line count
           </div>
         </div>
       </div>

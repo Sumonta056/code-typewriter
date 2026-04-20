@@ -1,7 +1,7 @@
 <template>
   <textarea
     ref="inputEl"
-    class="hidden-input"
+    class="absolute opacity-0 w-px h-px overflow-hidden [clip:rect(0,0,0,0)] pointer-events-none"
     autocomplete="off"
     autocorrect="off"
     autocapitalize="off"

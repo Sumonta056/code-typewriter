@@ -4,7 +4,7 @@
       <div
         v-if="visible"
         ref="overlayRef"
-        class="results-overlay"
+        class="fixed inset-0 bg-bg-overlay flex items-center justify-center z-[100] outline-none"
         role="dialog"
         aria-modal="true"
         aria-label="Session results"

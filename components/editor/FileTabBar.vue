@@ -1,6 +1,10 @@
 <template>
-  <div class="file-tab-bar">
-    <div class="file-tab active">
+  <div
+    class="flex items-stretch bg-bg-surface border border-c-border border-b-0 rounded-t-base overflow-x-auto"
+  >
+    <div
+      class="flex items-center gap-[8px] px-[18px] py-[10px] font-code text-[0.75rem] text-c-text-dim border-r border-c-border whitespace-nowrap cursor-default border-b-2 border-b-c-accent mb-[-1px] text-c-text bg-bg-main"
+    >
       <svg
         width="14"
         height="14"
@@ -13,9 +17,13 @@
         <polyline points="13 2 13 9 20 9" />
       </svg>
       <span>{{ fileName }}</span>
-      <span v-if="progress" class="file-tab-badge">{{ progress }}</span>
+      <span
+        v-if="progress"
+        class="text-[0.65rem] text-c-text-faint bg-bg-raised px-[8px] py-[1px] rounded-[10px]"
+        >{{ progress }}</span
+      >
     </div>
-    <div class="file-tab-filler" />
+    <div class="flex-1 border-b border-c-border flex items-center justify-end pr-[12px]" />
   </div>
 </template>
 

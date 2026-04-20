@@ -1,6 +1,9 @@
 <template>
   <div
-    :class="['typing-container', { 'typing-active': typingActive, 'smooth-caret': smoothCaret }]"
+    :class="[
+      'flex-1 overflow-hidden relative min-h-0',
+      { 'typing-active': typingActive, 'smooth-caret': smoothCaret },
+    ]"
   >
     <EditorTypingPlaceholder v-if="!hasCode" />
     <EditorCodeDisplay
