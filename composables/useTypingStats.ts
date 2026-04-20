@@ -1,6 +1,6 @@
 import { onScopeDispose } from 'vue'
-import { useTypingStore } from '~/stores/typing'
 import { useLiveStatsStore } from '~/stores/liveStats'
+import { useTypingStore } from '~/stores/typing'
 import {
   ACCURACY_SAMPLE_INTERVAL_S,
   MAX_ACCURACY_SAMPLES,
