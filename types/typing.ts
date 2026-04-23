@@ -1,6 +1,5 @@
 export type CharState = 'pending' | 'correct' | 'incorrect'
 
-// A hex color string from Shiki (e.g. '#c678dd') or '' for uncolored
 export type TokenType = string
 
 export interface SessionResult {
