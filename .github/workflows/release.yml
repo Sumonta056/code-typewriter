@@ -1,0 +1,85 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate release notes from commits
+        id: notes
+        run: |
+          CURRENT_TAG="${GITHUB_REF_NAME}"
+
+          # Find the previous tag (the one before the current)
+          PREV_TAG=$(git tag --sort=-version:refname | grep -v "^${CURRENT_TAG}$" | head -1)
+
+          if [ -z "$PREV_TAG" ]; then
+            RANGE="HEAD"
+          else
+            RANGE="${PREV_TAG}..${CURRENT_TAG}"
+          fi
+
+          echo "Generating notes for range: ${RANGE}"
+
+          # Extract commits by type
+          FEATS=$(git log "$RANGE" --pretty=format:"%s" | grep -E "^ISSUE-[0-9]+: feat:" | sed 's/^ISSUE-[0-9]*: feat: /- /')
+          FIXES=$(git log "$RANGE" --pretty=format:"%s" | grep -E "^ISSUE-[0-9]+: fix:" | sed 's/^ISSUE-[0-9]*: fix: /- /')
+          PERF=$(git log "$RANGE" --pretty=format:"%s" | grep -E "^ISSUE-[0-9]+: perf:" | sed 's/^ISSUE-[0-9]*: perf: /- /')
+          STYLES=$(git log "$RANGE" --pretty=format:"%s" | grep -E "^ISSUE-[0-9]+: style:" | sed 's/^ISSUE-[0-9]*: style: /- /')
+          REFACTORS=$(git log "$RANGE" --pretty=format:"%s" | grep -E "^ISSUE-[0-9]+: refactor:" | sed 's/^ISSUE-[0-9]*: refactor: /- /')
+          CHORES=$(git log "$RANGE" --pretty=format:"%s" | grep -E "^ISSUE-[0-9]+: chore:" | sed 's/^ISSUE-[0-9]*: chore: /- /')
+          DOCS=$(git log "$RANGE" --pretty=format:"%s" | grep -E "^ISSUE-[0-9]+: doc:" | sed 's/^ISSUE-[0-9]*: doc: /- /')
+
+          # Build the notes body
+          BODY=""
+
+          if [ -n "$FEATS" ]; then
+            BODY="${BODY}## Features\n${FEATS}\n\n"
+          fi
+          if [ -n "$FIXES" ]; then
+            BODY="${BODY}## Bug Fixes\n${FIXES}\n\n"
+          fi
+          if [ -n "$PERF" ]; then
+            BODY="${BODY}## Performance\n${PERF}\n\n"
+          fi
+          if [ -n "$STYLES" ]; then
+            BODY="${BODY}## Style\n${STYLES}\n\n"
+          fi
+          if [ -n "$REFACTORS" ]; then
+            BODY="${BODY}## Refactors\n${REFACTORS}\n\n"
+          fi
+          if [ -n "$CHORES" ]; then
+            BODY="${BODY}## Chores\n${CHORES}\n\n"
+          fi
+          if [ -n "$DOCS" ]; then
+            BODY="${BODY}## Documentation\n${DOCS}\n\n"
+          fi
+
+          if [ -z "$BODY" ]; then
+            BODY="No structured commits found for this release."
+          fi
+
+          if [ -n "$PREV_TAG" ]; then
+            BODY="${BODY}---\n**Full changelog:** [\`${PREV_TAG}...${CURRENT_TAG}\`](https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${CURRENT_TAG})"
+          fi
+
+          # Write to file to preserve newlines
+          printf "%b" "$BODY" > release_notes.md
+          cat release_notes.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: release_notes.md
+          make_latest: true

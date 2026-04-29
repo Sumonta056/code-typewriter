@@ -191,6 +191,17 @@
 <script setup lang="ts">
   import { useIndexPage } from '~/composables/useIndexPage'
 
+  useHead({
+    title: 'Practice',
+    meta: [
+      {
+        name: 'description',
+        content:
+          'Practice typing real source code from GitHub. Select a language, load a random file, and improve your WPM and accuracy — right in your browser.',
+      },
+    ],
+  })
+
   const {
     typingStore,
     settingsStore,
