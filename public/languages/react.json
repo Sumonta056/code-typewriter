@@ -1,0 +1,27 @@
+{
+  "id": "react",
+  "name": "React",
+  "extension": ".js",
+  "files": [
+    {
+      "name": "React JSX Element",
+      "url": "https://raw.githubusercontent.com/facebook/react/main/packages/react/src/jsx/ReactJSXElement.js"
+    },
+    {
+      "name": "React Reconciler",
+      "url": "https://raw.githubusercontent.com/facebook/react/main/packages/react-reconciler/src/ReactFiber.js"
+    },
+    {
+      "name": "React DOM Events",
+      "url": "https://raw.githubusercontent.com/facebook/react/main/packages/react-dom-bindings/src/events/DOMEventProperties.js"
+    },
+    {
+      "name": "React Hooks",
+      "url": "https://raw.githubusercontent.com/facebook/react/main/packages/react-reconciler/src/ReactFiberHooks.js"
+    },
+    {
+      "name": "React DOM Client",
+      "url": "https://raw.githubusercontent.com/facebook/react/main/packages/react-dom/src/ReactDOMSharedInternals.js"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "typescript",
+  "name": "TypeScript",
+  "extension": ".ts",
+  "files": [
+    {
+      "name": "TS Compiler - utilities",
+      "url": "https://raw.githubusercontent.com/microsoft/TypeScript/main/src/compiler/utilities.ts"
+    },
+    {
+      "name": "TS Compiler - types",
+      "url": "https://raw.githubusercontent.com/microsoft/TypeScript/main/src/compiler/types.ts"
+    },
+    {
+      "name": "TS Core - diagnostics",
+      "url": "https://raw.githubusercontent.com/microsoft/TypeScript/main/src/compiler/diagnosticMessages.json"
+    },
+    {
+      "name": "TS Compiler - binder",
+      "url": "https://raw.githubusercontent.com/microsoft/TypeScript/main/src/compiler/binder.ts"
+    },
+    {
+      "name": "TS Services - completions",
+      "url": "https://raw.githubusercontent.com/microsoft/TypeScript/main/src/services/completions.ts"
+    }
+  ]
+}

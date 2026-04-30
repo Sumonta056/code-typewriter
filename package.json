@@ -12,10 +12,9 @@
   },
   "type": "module",
   "scripts": {
-    "sync:snippets": "node scripts/build-snippets.mjs",
-    "build": "npm run sync:snippets && nuxt build",
-    "dev": "npm run sync:snippets && nuxt dev",
-    "generate": "npm run sync:snippets && nuxt generate",
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "prepare": "husky",

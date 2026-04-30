@@ -1,0 +1,27 @@
+{
+  "id": "python",
+  "name": "Python",
+  "extension": ".py",
+  "files": [
+    {
+      "name": "Python functools",
+      "url": "https://raw.githubusercontent.com/python/cpython/main/Lib/functools.py"
+    },
+    {
+      "name": "Python itertools",
+      "url": "https://raw.githubusercontent.com/python/cpython/main/Lib/itertools.pyi"
+    },
+    {
+      "name": "Python pathlib",
+      "url": "https://raw.githubusercontent.com/python/cpython/main/Lib/pathlib/_local.py"
+    },
+    {
+      "name": "Python dataclasses",
+      "url": "https://raw.githubusercontent.com/python/cpython/main/Lib/dataclasses.py"
+    },
+    {
+      "name": "Python asyncio base",
+      "url": "https://raw.githubusercontent.com/python/cpython/main/Lib/asyncio/base_events.py"
+    }
+  ]
+}

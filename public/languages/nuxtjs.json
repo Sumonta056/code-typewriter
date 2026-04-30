@@ -1,0 +1,27 @@
+{
+  "id": "nuxtjs",
+  "name": "Nuxt JS",
+  "extension": ".ts",
+  "files": [
+    {
+      "name": "Nuxt App Entry",
+      "url": "https://raw.githubusercontent.com/nuxt/nuxt/main/packages/nuxt/src/app/entry.ts"
+    },
+    {
+      "name": "Nuxt Composables - fetch",
+      "url": "https://raw.githubusercontent.com/nuxt/nuxt/main/packages/nuxt/src/app/composables/fetch.ts"
+    },
+    {
+      "name": "Nuxt Router Utilities",
+      "url": "https://raw.githubusercontent.com/nuxt/nuxt/main/packages/nuxt/src/app/composables/router.ts"
+    },
+    {
+      "name": "Nuxt Head Composable",
+      "url": "https://raw.githubusercontent.com/nuxt/nuxt/main/packages/nuxt/src/app/composables/head.ts"
+    },
+    {
+      "name": "Nuxt State Composable",
+      "url": "https://raw.githubusercontent.com/nuxt/nuxt/main/packages/nuxt/src/app/composables/state.ts"
+    }
+  ]
+}

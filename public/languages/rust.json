@@ -1,0 +1,27 @@
+{
+  "id": "rust",
+  "name": "Rust",
+  "extension": ".rs",
+  "files": [
+    {
+      "name": "Rust - HashMap",
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/master/library/std/src/collections/hash/map.rs"
+    },
+    {
+      "name": "Rust - Vec impl",
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/master/library/alloc/src/vec/mod.rs"
+    },
+    {
+      "name": "Rust - Iterator trait",
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/master/library/core/src/iter/traits/iterator.rs"
+    },
+    {
+      "name": "Rust - Option impl",
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/master/library/core/src/option.rs"
+    },
+    {
+      "name": "Rust - String impl",
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/master/library/alloc/src/string.rs"
+    }
+  ]
+}

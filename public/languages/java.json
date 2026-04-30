@@ -1,0 +1,27 @@
+{
+  "id": "java",
+  "name": "Java",
+  "extension": ".java",
+  "files": [
+    {
+      "name": "Guava - ImmutableList",
+      "url": "https://raw.githubusercontent.com/google/guava/master/guava/src/com/google/common/collect/ImmutableList.java"
+    },
+    {
+      "name": "Guava - Optional",
+      "url": "https://raw.githubusercontent.com/google/guava/master/guava/src/com/google/common/base/Optional.java"
+    },
+    {
+      "name": "Guava - Preconditions",
+      "url": "https://raw.githubusercontent.com/google/guava/master/guava/src/com/google/common/base/Preconditions.java"
+    },
+    {
+      "name": "Guava - Strings",
+      "url": "https://raw.githubusercontent.com/google/guava/master/guava/src/com/google/common/base/Strings.java"
+    },
+    {
+      "name": "Guava - CharMatcher",
+      "url": "https://raw.githubusercontent.com/google/guava/master/guava/src/com/google/common/base/CharMatcher.java"
+    }
+  ]
+}

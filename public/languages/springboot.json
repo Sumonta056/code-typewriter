@@ -1,0 +1,27 @@
+{
+  "id": "springboot",
+  "name": "Spring Boot",
+  "extension": ".java",
+  "files": [
+    {
+      "name": "SpringApplication",
+      "url": "https://raw.githubusercontent.com/spring-projects/spring-boot/main/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/SpringApplication.java"
+    },
+    {
+      "name": "AutoConfigurationImportSelector",
+      "url": "https://raw.githubusercontent.com/spring-projects/spring-boot/main/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/AutoConfigurationImportSelector.java"
+    },
+    {
+      "name": "SpringBootApplication",
+      "url": "https://raw.githubusercontent.com/spring-projects/spring-boot/main/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/SpringBootApplication.java"
+    },
+    {
+      "name": "DataSourceAutoConfiguration",
+      "url": "https://raw.githubusercontent.com/spring-projects/spring-boot/main/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jdbc/DataSourceAutoConfiguration.java"
+    },
+    {
+      "name": "WebMvcAutoConfiguration",
+      "url": "https://raw.githubusercontent.com/spring-projects/spring-boot/main/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration.java"
+    }
+  ]
+}

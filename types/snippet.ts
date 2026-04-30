@@ -9,7 +9,3 @@ export interface Language {
   extension: string
   files: SnippetFile[]
 }
-
-export interface SnippetsData {
-  languages: Language[]
-}
