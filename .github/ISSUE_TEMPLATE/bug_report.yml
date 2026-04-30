@@ -1,0 +1,46 @@
+name: Bug report
+description: Report something that is broken or behaving unexpectedly.
+title: 'ISSUE-000: fix: '
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting a bug. Please include enough detail for someone else to reproduce it.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the bug and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to ...
+        2. Select ...
+        3. Type ...
+        4. See ...
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or recording
+      description: Add screenshots or a short recording if the issue is visual.
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      placeholder: Chrome 124, Firefox 125, Safari 17
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: macOS, Windows, Linux, iOS, Android
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add logs, console errors, snippet URLs, or anything else useful.

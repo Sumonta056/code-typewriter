@@ -1,0 +1,47 @@
+name: Feature request
+description: Suggest an improvement or new capability.
+title: 'ISSUE-000: feat: '
+labels: ['enhancement']
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for suggesting an improvement. Tell us about the user problem first.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to do, and what feels missing or painful today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the behavior or UI you would like to see.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Mention other approaches or workarounds you tried.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Typing experience
+        - Stats and history
+        - Language snippets
+        - Settings
+        - UI / styling
+        - Performance
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add screenshots, examples, references, or related issues.
