@@ -1,8 +1,6 @@
 <div align="center">
 
-<img src="./public/banner.svg" alt="Code Typewriter — Type real source code, build real muscle memory" width="100%"/>
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md) [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org) [![Built with Nuxt](https://img.shields.io/badge/Built%20with-Nuxt%203-00DC82?logo=nuxt.js)](https://nuxt.com) [![Powered by Shiki](https://img.shields.io/badge/Syntax-Shiki-7c3aed)](https://shiki.matsu.io)
+<img src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qsfslnm8vrukdkpeb5av.png" alt="Code Typewriter — Type real source code, build real muscle memory" width="100%"/>
 
 **[Report a Bug](https://github.com/Sumonta056/code-typewriter/issues/new?template=bug_report.yml) · [Request a Feature](https://github.com/Sumonta056/code-typewriter/issues/new?template=feature_request.yml) · [Add a Language](https://github.com/Sumonta056/code-typewriter/issues/new?template=language_request.yml)**
 

@@ -76,26 +76,26 @@ All stores are Pinia setup-style. Keep persistence + state here. Heavy derivatio
 
 ## 5. Composables
 
-| Composable         | Role                                                                                      |
-| ------------------ | ----------------------------------------------------------------------------------------- |
-| `useIndexPage`     | Orchestrator for `pages/index.vue`. Owns page handlers, template refs, and lifecycle.     |
-| `useTypingEngine`  | Session orchestrator. Wires stores + stats + tokenizer + fetcher. Used by `useIndexPage`. |
-| `useTypingStats`     | Live WPM / accuracy / CPM loop. Polls every `STATS_UPDATE_INTERVAL_MS`.                     |
-| `useGithubFetcher`   | Parses GitHub URLs, fetches raw content, truncates to `maxLines`.                           |
-| `useKeyboardHandler` | Normalizes Tab→spaces, Enter→`\n`, Backspace→action; ignores Meta/Alt/Ctrl.                |
-| `useScrollTracker`   | Keeps the current character visible via rAF-scheduled `scrollTo`.                          |
+| Composable           | Role                                                                                      |
+| -------------------- | ----------------------------------------------------------------------------------------- |
+| `useIndexPage`       | Orchestrator for `pages/index.vue`. Owns page handlers, template refs, and lifecycle.     |
+| `useTypingEngine`    | Session orchestrator. Wires stores + stats + tokenizer + fetcher. Used by `useIndexPage`. |
+| `useTypingStats`     | Live WPM / accuracy / CPM loop. Polls every `STATS_UPDATE_INTERVAL_MS`.                   |
+| `useGithubFetcher`   | Parses GitHub URLs, fetches raw content, truncates to `maxLines`.                         |
+| `useKeyboardHandler` | Normalizes Tab→spaces, Enter→`\n`, Backspace→action; ignores Meta/Alt/Ctrl.               |
+| `useScrollTracker`   | Keeps the current character visible via rAF-scheduled `scrollTo`.                         |
 
 ---
 
 ## 6. Pages
 
-| Page          | Role                                                                                                                                                                               |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Page           | Role                                                                                                                                                                               |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `index.vue`    | Main practice page. Thin shell — delegates entirely to `useIndexPage`. Renders editor, sidebar, URL/settings panels, results overlay.                                              |
 | `profile.vue`  | Analytics dashboard. Displays WPM trend, calendar heatmap, language breakdown, mistake heatmap, lifetime numbers, recent sessions list, and CSV export. Reads from `historyStore`. |
 | `about.vue`    | Static informational page. Explains the app, how it works, privacy model, and donation link. No store access.                                                                      |
 | `rules.vue`    | Static page documenting the typing rules and how the practice session works.                                                                                                       |
-| `settings.vue` | Settings page. Allows users to adjust font size, tab size, max lines, theme, and other preferences. Reads/writes `settingsStore`.                                                 |
+| `settings.vue` | Settings page. Allows users to adjust font size, tab size, max lines, theme, and other preferences. Reads/writes `settingsStore`.                                                  |
 
 ---
 
