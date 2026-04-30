@@ -1,6 +1,6 @@
 # Architecture
 
-Canonical reference for the Code Typewriter codebase. Updated 2026-04-20.
+Canonical reference for the Code Typewriter codebase. Updated 2026-04-30.
 
 ---
 
@@ -13,9 +13,10 @@ A client-side-only typing practice app (Nuxt 3 SPA, `ssr: false`). The user pick
 ## 2. Directory layout
 
 | Directory                   | Purpose                                                                                                                                                                                         |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ------------- | --------------------------------------------------------------------------------------------------------- |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `pages/`                    | Route-level components. Thin — all logic lives in the matching page composable.                                                                                                                 |
-| `layouts/`                  | `default.vue` wraps every page with nav + overlays.                                                                                                                                             |     | `components/` | UI. Grouped by domain: `app/`, `editor/`, `overlay/`, `panels/`, `results/`, `stats/`, `toolbar/`, `ui/`. |
+| `layouts/`                  | `default.vue` wraps every page with nav + overlays.                                                                                                                                             |
+| `components/`               | UI. Grouped by domain: `app/`, `editor/`, `overlay/`, `panels/`, `results/`, `stats/`, `toolbar/`, `ui/`.                                                                                       |
 | `composables/`              | Reusable reactive logic. One purpose per file. May import stores and utils.                                                                                                                     |
 | `stores/`                   | Pinia stores (setup style). Hold ephemeral or persisted state + the mutations that change it. No heavy analytics.                                                                               |
 | `utils/`                    | Pure functions and static data. No Vue imports, no reactivity. Cheaply unit-testable.                                                                                                           |
@@ -79,11 +80,10 @@ All stores are Pinia setup-style. Keep persistence + state here. Heavy derivatio
 | ------------------ | ----------------------------------------------------------------------------------------- |
 | `useIndexPage`     | Orchestrator for `pages/index.vue`. Owns page handlers, template refs, and lifecycle.     |
 | `useTypingEngine`  | Session orchestrator. Wires stores + stats + tokenizer + fetcher. Used by `useIndexPage`. |
-| `useTypingStats`   | Live WPM / accuracy / CPM loop. Polls every `STATS_UPDATE_INTERVAL_MS`.                   |
-| `useGithubFetcher` | Parses GitHub URLs, fetches raw content, truncates to `maxLines`.                         |
-
-| `useKeyboardHandler` | Normalizes Tab→spaces, Enter→`\n`, Backspace→action; ignores Meta/Alt/Ctrl. |
-| `useScrollTracker` | Keeps the current character visible via rAF-scheduled `scrollTo`. |
+| `useTypingStats`     | Live WPM / accuracy / CPM loop. Polls every `STATS_UPDATE_INTERVAL_MS`.                     |
+| `useGithubFetcher`   | Parses GitHub URLs, fetches raw content, truncates to `maxLines`.                           |
+| `useKeyboardHandler` | Normalizes Tab→spaces, Enter→`\n`, Backspace→action; ignores Meta/Alt/Ctrl.                |
+| `useScrollTracker`   | Keeps the current character visible via rAF-scheduled `scrollTo`.                          |
 
 ---
 
@@ -91,9 +91,11 @@ All stores are Pinia setup-style. Keep persistence + state here. Heavy derivatio
 
 | Page          | Role                                                                                                                                                                               |
 | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `index.vue`   | Main practice page. Thin shell — delegates entirely to `useIndexPage`. Renders editor, sidebar, URL/settings panels, results overlay.                                              |
-| `profile.vue` | Analytics dashboard. Displays WPM trend, calendar heatmap, language breakdown, mistake heatmap, lifetime numbers, recent sessions list, and CSV export. Reads from `historyStore`. |
-| `about.vue`   | Static informational page. Explains the app, how it works, privacy model, and donation link. No store access.                                                                      |
+| `index.vue`    | Main practice page. Thin shell — delegates entirely to `useIndexPage`. Renders editor, sidebar, URL/settings panels, results overlay.                                              |
+| `profile.vue`  | Analytics dashboard. Displays WPM trend, calendar heatmap, language breakdown, mistake heatmap, lifetime numbers, recent sessions list, and CSV export. Reads from `historyStore`. |
+| `about.vue`    | Static informational page. Explains the app, how it works, privacy model, and donation link. No store access.                                                                      |
+| `rules.vue`    | Static page documenting the typing rules and how the practice session works.                                                                                                       |
+| `settings.vue` | Settings page. Allows users to adjust font size, tab size, max lines, theme, and other preferences. Reads/writes `settingsStore`.                                                 |
 
 ---
 
@@ -151,7 +153,7 @@ Edits to these require justification and a typing-session smoke test:
 - `<script setup lang="ts">` only; no Options API.
 - Pinia stores use the setup function form.
 - No external UI libraries. Tailwind is the only CSS framework.
-- `shiki` is the only permitted external syntax-highlighting library. Tailwind is the only CSS framework.
+- `shiki` is the only permitted external syntax-highlighting library.
 - No backend; persistence is localStorage only.
 - Scoped `<style>` blocks are not used — all component CSS lives in `assets/css/components.css`.
 - Pages are thin: one orchestrator composable per page (`useIndexPage`, etc.).

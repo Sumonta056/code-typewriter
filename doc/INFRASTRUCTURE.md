@@ -378,6 +378,9 @@ graph LR
     subgraph Pages
         IDX[index.vue]
         PRF[profile.vue]
+        ABT[about.vue]
+        RLS[rules.vue]
+        SET[settings.vue]
     end
 
     subgraph Components
