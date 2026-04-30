@@ -1,11 +1,20 @@
 {
   "name": "code-typewriter",
-  "private": true,
+  "description": "A Nuxt typing practice app for developers using real source code snippets.",
+  "license": "MIT",
+  "homepage": "https://github.com/Sumonta056/code-typewriter#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sumonta056/code-typewriter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Sumonta056/code-typewriter/issues"
+  },
   "type": "module",
   "scripts": {
-    "sync:snippets": "cp Prototype/snippets.json public/snippets.json",
-    "build": "nuxt build",
-    "dev": "nuxt dev",
+    "sync:snippets": "node scripts/build-snippets.mjs",
+    "build": "npm run sync:snippets && nuxt build",
+    "dev": "npm run sync:snippets && nuxt dev",
     "generate": "npm run sync:snippets && nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
@@ -34,6 +43,7 @@
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.5.3",
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@typescript-eslint/eslint-plugin": "^8.58.0",
     "@typescript-eslint/parser": "^8.58.0",
