@@ -86,6 +86,27 @@
         >
       </span>
     </button>
+
+    <!-- Rules / How scoring works -->
+    <NuxtLink
+      to="/rules"
+      class="toolbar-btn flex items-center gap-[10px] w-full px-[10px] py-[7px] rounded-[8px] border border-c-border bg-bg-surface cursor-pointer text-left transition-colors duration-200 hover:bg-bg-hover hover:border-[rgba(var(--accent-rgb),0.3)] no-underline"
+      title="Learn the rules and how scoring works"
+    >
+      <span
+        class="flex-shrink-0 flex items-center justify-center w-[28px] h-[28px] rounded-[6px] bg-bg-root text-c-text-dim"
+      >
+        <Icon name="ph:book-open-bold" size="16" />
+      </span>
+      <span class="toolbar-btn-text flex flex-col gap-[1px] min-w-0">
+        <span class="font-code text-[0.72rem] font-semibold leading-[1.2] text-c-text-dim"
+          >Rules & Scoring</span
+        >
+        <span class="font-ui text-[0.62rem] text-c-text-faint leading-[1.3]"
+          >How scoring works</span
+        >
+      </span>
+    </NuxtLink>
   </div>
 </template>
 
